@@ -9,6 +9,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
    private GameObject[] Cube; 
 	private GameObject[] CubeMesh;
  	public GameObject Linerenderer;
+	public GameObject Sphere;
 	private PrimitiveType mPrimitiveType;
 	LineRenderer LinRen; 
 	static int LineIndex = 1;
@@ -31,7 +32,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
             g.transform.parent = transform;
 
 			g.transform.name = "Cube"+(i+1).ToString();
-			g.GetComponentInChildren<TextMesh>().text = (i+1).ToString();
+			g.GetComponentInChildren<TextMesh>().text = "";
 			
 			
         }
@@ -133,12 +134,18 @@ public class ArrangeAlongSphere : MonoBehaviour {
 			}
 		}
 		
-		Plotlines();
+		//Plotlines();
 		PlotMeshes();
 		//PlotStatic();
-//		int[] Points = new int[6];
-//		Points = NearestPoints( 1 );
-//		DrawTriangles( 1, Points );
+//			int[] Points = new int[6];
+//			Points = NearestPoints( 15 );
+			
+		//	DrawTriangles( 15, Points );
+		
+
+		//Sort(Points,15);
+		
+		
 //		for(int j = 1; j < 51; j++ )
 //		{
 //			DrawDynamicLineRenderers( j );
@@ -157,6 +164,13 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		{
 //			DrawAlllines( i );
 //		}
+	}
+	
+	void Sort(int [] Points , int index){
+		
+		
+		
+		
 	}
 	void PlotStatic()
 	{
@@ -177,6 +191,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 					//CubeMesh[val].GetComponent<MeshRenderer>().materials[0]. = new Color( Random.Range( 1,255),Random.Range( 1,255),Random.Range( 1,255),1);
 					newmesh.triangles = new int[]{2,0,1};
 					CubeMesh[val].GetComponent<MeshFilter>().mesh = newmesh;
+					//int R = Random.Range(0,4);
 					CubeMesh[val].renderer.material = Matt;
 				val++;
 		
@@ -186,40 +201,295 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	{
 		for ( int i = 1; i <= 50; i++ )
 		{
-			int[] Points = new int[6];
+			int[] Points = new int[12];
 			Points = NearestPoints( i );
 			DrawTriangles( i, Points );
 		}
 	}
 	
+	Vector3 CalculateCentroid( int [] p )
+	{
+		Vector3 a = Vector3.zero;;
+		for( int i = 1; i < p.Length; i++ )
+		{
+			a.x += Cube[ p[i] ].transform.position.x;
+			a.y += Cube[ p[i] ].transform.position.y;
+			a.z += Cube[ p[i] ].transform.position.z;
+		}
+		
+		a = a / p.Length;
+		return a;
+	}
+	
+	int[] SortPoints( int Index, int[] x )
+	{
+		Vector3 Pivot =  CalculateCentroid( x );//Cube[ Index ].transform.position;
+		GameObject s = Instantiate( Sphere, Pivot, Quaternion.identity ) as GameObject;
+		s.transform.parent = transform;
+		Vector3[] v = new Vector3[7];
+		for( int i = 1; i <= 6; i++ )
+		{
+			v[i] = Cube[ x[i] ].transform.position - Pivot;
+		}
+		//float[] angles = new float[7];
+		//List<GameObject,float> angles = new List< GameObject, float>();
+		float[] angles = new float[7];
+		for( int j = 1; j <= 6; j++ )
+		{
+			//angles[j] =   Mathf.Atan2(  Vector3.Dot( Cube[ Index ].transform.position , Vector3.Cross(Cube[ x[1] ].transform.position, Cube[ x[j] ].transform.position)), Vector3.Dot(Cube[ x[1] ].transform.position, Cube[ x[j] ].transform.position) * Mathf.Rad2Deg );//Vector3.Angle( v[0], v[j] );
+			//Debug.Log( "Angle: " + angles[j]);
+			angles[j] = Vector3.Angle( v[1], v[j] ); //Mathf.Acos( Vector3.Dot( v[1], v[j]) / (Vector3.Magnitude( v[1]) * Vector3.Magnitude( v[j]))) * Mathf.Rad2Deg;
+			
+//			if( angles[j] < Vector3.Angle( v[1], v[j - 1] ))
+//			{
+//				angles[j] = 360 - angles[j];
+//			}
+			//angles.Add( Cube[x[j]], angles1[j]);
+			//Cube[ x[j] ].transform.tag = ((int)angles[j]).ToString();
+		}
+		
+		float[ ] FinalAngles = new float[7];
+//		for( int i = 1; i <= 6; i++ )
+//		{
+//			if( i < 6)
+//				FinalAngles[i] = angles[i] - angles[i+1];
+//			else
+//				FinalAngles[i] = angles[i] - angles[1];
+//		}
+//		
+		for( int i = 1; i <= 6; i++ )
+		{
+			for( int j = 1; j <= 6; j++ )
+			{
+				if( angles[i] < angles[j] )
+				{
+					int Temp = x[i];
+//					float Temp2 = angles[i];
+//					angles[i] = angles[j];
+//					angles[j] = Temp2;
+					x[i] = x[j];
+					x[j] = Temp;
+				}
+			}
+			
+			
+			
+			
+		}
+		int[] IndexArray = new int[7]{ 0,1,2,3,4,5,6};
+//		for( int i = 1; i <= 6; i++ )
+//		{
+//			for( int j = 1; j <= 5; j++ )
+//			{
+//				if( angles[i] < angles[j] )
+//				{
+//					float Temp = angles[i];				
+//					angles[i] = angles[j];
+//					angles[j] = Temp;
+//					
+//					
+//				}
+//				
+//					
+//			} 
+//			
+//		}
+		
+		int n = 7;
+	for(int i=1; i<n; i++)
+
+	{
+
+		for(int y=1; y<n-1; y++)
+
+		{
+
+			if(angles[y]>angles[y+1])
+
+			{
+
+				float temp = angles[y+1];
+
+				angles[y+1] = angles[y];
+
+				angles[y] = temp;
+					
+				int temp1 = IndexArray[y+1];
+
+				IndexArray[y+1] = IndexArray[y];
+
+				IndexArray[y] = temp1;
+					
+
+			}
+
+		}
+
+	}
+				Debug.Log("Sorted: " + angles[0] + " " + angles[1] + " " + angles[2] + " " + angles[3] + " " + angles[4] + " " + angles[5] + " " + angles[6] );
+
+		Debug.Log("Sored: " + IndexArray[0] + " " + IndexArray[1] + " " + IndexArray[2] + " " + IndexArray[3] + " " + IndexArray[4] + " " + IndexArray[5] + " " + IndexArray[6] );
+		
+			for( int j = 1; j <= 6; j++ )
+			{
+				
+					Cube[x[ IndexArray[j] ]].transform.localScale += new Vector3( j* 0.01f, j*0.01f,j*0.01f);
+				
+			}
+				Debug.Log("CUBE: " + x[ IndexArray[0] ] +  " " +x[ IndexArray[1] ] + " " + x[ IndexArray[2] ] + " " + x[ IndexArray[3] ] + " " + x[ IndexArray[4] ] + " " + x[ IndexArray[5] ]  + " " + x[ IndexArray[6] ] );
+
+		
+		
+		for( int i = 1; i <= 6; i++ )
+		{
+		//	Debug.Log( x[i] );
+			
+			//Cube[ x[i] ].transform.localScale += new Vector3( i* 0.01f, i*0.01f,i*0.01f);
+//			Cube[ x[i] ].GetComponentInChildren<TextMesh>().text = angles[i].ToString();
+//			Cube[ x[i] ].GetComponentInChildren<TextMesh>().fontSize = 10;
+			//Debug.Log("CUBENO:" + x[i] );
+		//	Debug.Log( "Index"+IndexArray[i]);
+			//Debug.Log( angles[i].ToString() + " " + angles[i] );
+		}
+		return x;
+		
+	}
+	private int[] NearestPointsLocal1( int Index, int[] Plot, int CubeIndex )
+	{
+		float[] Distance = new float[7];
+		int[] CubeNo = new int[8];
+		for ( int i = CubeIndex + 1; i <= 6; i++ )
+		{
+			Distance[i] =  CalculateDistance ( Cube[ Index ].transform.position, Cube[Plot[i]].transform.position );
+			CubeNo[i - CubeIndex + 1 ] = Plot[i];
+		}
+		for ( int i = 1; i <= 50; i++ )
+		{
+			for ( int j = 1; j <= 50; j++ )
+			{
+				if( Distance[i] < Distance[j] )
+				{
+					float temp = Distance[i];
+					int temp1 = CubeNo[i];
+					Distance[i] = Distance[j];
+					CubeNo[i] = CubeNo[j];
+					Distance[j] = temp;
+					CubeNo[j] = temp1;
+				}
+			}
+		}
+		
+//		for( int i = 1; i <= 50; i++ )
+//		{
+//			Debug.Log( Distance[i] );
+//			Debug.Log( CubeNo[i]);
+//		}
+		
+		int[] Result = new int[3];
+		//Result = CubeNo;
+		for( int i = 1; i<= 2; i++ )
+		{
+			Result[i] = CubeNo[i];
+		}
+		return Result;
+	}
+	
+	int[] NearestPointsLocal( Vector3 P, int[] Plot, int Pivot )
+	{
+		float[] Distance = new float[7]{ 0, 0, 0, 0, 0, 0, 0};
+		int[] CubeNo = new int[7]{ 0,0,0,0,0,0,0};
+		for( int i = 2; i <= 6; i++ )
+		{
+			Distance[i] = CalculateDistance( P, Cube[ Plot[i] ].transform.position );
+			CubeNo[i] = Plot[i];
+		}
+		
+		Debug.Log( "Distence Before: "+" "+Distance[1]+" "+Distance[2]+" "+Distance[3]+" "+Distance[4]+" "+Distance[5]+" "+Distance[6]);
+		
+		for(int i=1; i <= 6; i++)
+
+		{
+	
+			for(int y=1; y<=5; y++)
+	
+			{
+	
+				if(Distance[y]>Distance[y+1])
+	
+				{
+	
+					float temp = Distance[y+1];
+	
+					Distance[y+1] = Distance[y];
+	
+					Distance[y] = temp;
+					
+					int temp1 = CubeNo[y+1];
+	
+					CubeNo[y+1] = CubeNo[y];
+					
+					CubeNo[y] = temp1;
+					
+						
+						
+	
+				}
+	
+			}
+	
+		}
+		Debug.Log( "Distence After: "+" "+Distance[1]+" "+Distance[2]+" "+Distance[3]+" "+Distance[4]+" "+Distance[5]+" "+Distance[6]);
+		
+		return CubeNo;
+	}
+	
 	void DrawTriangles( int Index, int[] Plot )
 	{
-		Debug.Log(Plot[0]+" "+Plot[1]+" "+Plot[2]+" "+Plot[3]+" "+Plot[4]+" "+Plot[5]+" "+Plot[6]+" "+Plot[7]);
-		int[] Plot1 = new int[8];
+		//Debug.Log(Plot[0]+" "+Plot[1]+" "+Plot[2]+" "+Plot[3]+" "+Plot[4]+" "+Plot[5]+" "+Plot[6]+" "+Plot[7]);
+		
+		int[] Plot1 = new int[12];
+//		int[][] N = new int[7][];
+//		for( int i=1; i <=6; i++)
+//		{
+//			 N[i] = NearestPointsLocal( Cube[ Plot[i]].transform.position, Plot, Index);
+//		}
+		//Debug.Log( " Plot1: " + N[2] + " Plot1: " + N[3]);
+		//Plot1 = SortPoints( Index, Plot );
 		Plot1[0] = Plot[0];
 		Plot1[1] = Plot[1] ;
 		Plot1[2] = Plot[4];
 		Plot1[3] = Plot[5];
-		Plot1[4] = Plot[2];
-		Plot1[5] = Plot[3];
-		Plot1[6] = Plot[6];
-		Plot1[7] = Plot[7];
+		Plot1[4] = Plot[8];
+		Plot1[5] = Plot[9];
+		Plot1[6] = Plot[2];
+		Plot1[7] = Plot[3];
+		Plot1[8] = Plot[6];
+		Plot1[9] = Plot[7];
+		Plot1[10] = Plot[10];
+		Plot1[11] = Plot[11];
 		
-		for( int i = 1; i <= 7; i++ )
+		for( int i = 1; i <= 11; i++ )
 		{
 			
 //			for( int j = 1; j <= 6; j++ )
 //			{
-				
-			if( i < 7 )
+//			Cube[Index].transform.localScale = new Vector3( 0.02f,0.02f,0.02f)	;
+			if( i < 11 )
 			{
+					//Cube[ N[j][i]].transform.localScale += new Vector3( j*0.004f,j*0.002f,j*0.002f);
 					CubeMesh[val].AddComponent("MeshFilter"); 
 					CubeMesh[val].AddComponent("MeshRenderer"); 
 					Debug.Log("val"+val);
 					Mesh newmesh = new Mesh();
 					Debug.Log(newmesh);
 					Debug.Log(Index);
-					Vector3 []vert = new Vector3[3]{Cube[Index].transform.position,Cube[Plot1[i]].transform.position,Cube[Plot1[(i+1)]].transform.position};
+					Vector3 []vert;
+					
+	
+					    vert = new Vector3[3]{Cube[Index].transform.position,Cube[Plot[i]].transform.position,Cube[Plot[(i+1)]].transform.position};
+					
+					
+					
 					newmesh.vertices = vert;
 					Vector2 []uvs = new Vector2[3]; 
 			 		for (int k=0; k<uvs.Length; k++)
@@ -227,15 +497,24 @@ public class ArrangeAlongSphere : MonoBehaviour {
 			 			uvs[k] = new Vector2(newmesh.vertices[k].x, newmesh.vertices[k].z);
 			 		}
 			 		newmesh.uv = uvs;
-					CubeMesh[val].GetComponent<MeshRenderer>().material.color = new Color( Random.Range( 1,255),Random.Range( 1,255),Random.Range( 1,255),1);
+//					MeshRendere	r newmeshRen = CubeMesh[val].GetComponent<MeshRenderer>();
+//					Material m = newmeshRen.material;
+//					m.color = new Color( Random.Range( 1,255),Random.Range( 1,255),Random.Range( 1,255),1);
+//					newmeshRen.material = m;
+					
+//					m.color = Color.blue;
+//					CubeMesh[val].GetComponent<MeshRenderer>().renderer.material = m;
 					newmesh.triangles = new int[]{2,0,1};
+					newmesh.RecalculateNormals();
 					CubeMesh[val].GetComponent<MeshFilter>().mesh = newmesh;
+					//int R = Random.Range(0,4);
+					
 					CubeMesh[val].renderer.material = Matt;
 				val++;
 			}
 					
 				
-			//}
+			
 			
 		}
 	}
@@ -264,6 +543,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
  		newmesh.uv = uvs;
 		newmesh.triangles = new int[]{0,1,2};
 		CubeMesh[Index].GetComponent<MeshFilter>().mesh = newmesh;
+		//int R = Random.Range(0,4);
 		CubeMesh[Index].renderer.material = Matt;
 	}
 	
@@ -285,6 +565,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
  		newmesh.uv = uvs;
 		newmesh.triangles = new int[]{2,0,1};
 		CubeMesh[Index].GetComponent<MeshFilter>().mesh = newmesh;
+		//int R = Random.Range(0,4);
 		CubeMesh[Index].renderer.material = Matt;
 	}
 	
@@ -1897,7 +2178,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	{
 		for ( int i = 1; i <= 50; i++)
 		{
-			int[] Points = new int[6];
+			int[] Points = new int[7];
 			Points = NearestPoints( i );
 			DrawLines( i, Points);
 		}
@@ -1905,6 +2186,11 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	
 	void DrawLines( int Index, int[] Plot )
 	{
+		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, Cube[Index].transform.position );
+		LinRen.SetPosition( 1, Cube[ Plot[1] ].transform.position);
+		LineIndex++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
 		LinRen.SetVertexCount( 2 );
@@ -1935,6 +2221,12 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetPosition( 0, Cube[Index].transform.position );
 		LinRen.SetPosition( 1, Cube[ Plot[6] ].transform.position);
 		LineIndex++;
+		
+//		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
+//		LinRen.SetVertexCount( 2 );
+//		LinRen.SetPosition( 0, Cube[Index].transform.position );
+//		LinRen.SetPosition( 1, Cube[ Plot[7] ].transform.position);
+//		LineIndex++;
 		
 	}
 	void DrawAlllines( int Index )
@@ -2043,13 +2335,20 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		System.IO.File.WriteAllBytes ( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls", bytes );
 	}
 	
+	float CalculateDistance( Vector3 a, Vector3 b )
+	{
+		float distance;
+		distance = Mathf.Sqrt(  Mathf.Pow ( a.x - b.x, 2 ) + Mathf.Pow ( a.y - b.y, 2 ) +Mathf.Pow ( a.z - b.z, 2 ) );
+		return distance;
+	}
+	
 	private int[] NearestPoints( int Index )
 	{
 		float[] Distance = new float[51];
 		int[] CubeNo = new int[51];
 		for ( int i = 1; i <= 50; i++ )
 		{
-			Distance[i] = Vector3.Distance( Cube[ Index ].transform.position, Cube[i].transform.position );
+			Distance[i] =  CalculateDistance ( Cube[ Index ].transform.position, Cube[i].transform.position );
 			CubeNo[i] = i;
 		}
 		for ( int i = 1; i <= 50; i++ )
@@ -2074,9 +2373,9 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //			Debug.Log( CubeNo[i]);
 //		}
 		
-		int[] Result = new int[8];
+		int[] Result = new int[12];
 		//Result = CubeNo;
-		for( int i = 0; i<= 7; i++ )
+		for( int i = 0; i<= 11; i++ )
 		{
 			Result[i] = CubeNo[i+1];
 		}
