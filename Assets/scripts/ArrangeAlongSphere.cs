@@ -10,15 +10,19 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	private GameObject[] CubeMesh;
  	public GameObject Linerenderer;
 	public GameObject Sphere;
+	Vector3[] CubeInitialPositions;
 	private PrimitiveType mPrimitiveType;
 	LineRenderer LinRen; 
 	static int LineIndex = 1;
+	static int LineIndex1 = 1;
 	 public float explosionRadius = 5.0F;
 	Vector3 []midpts = new Vector3[200];
 	int VertexCount;
 	Collider[] TargetCube;
 	public Material Matt;
 	public GameObject empty;
+	
+	float Radius;
 	//private List<Collider[]> Nearpoints = new List<Collider[]>();
 	static Collider[][] Nearpoints = new Collider[51][];
 	int val;
@@ -32,7 +36,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
             g.transform.parent = transform;
 
 			g.transform.name = "Cube"+(i+1).ToString();
-			g.GetComponentInChildren<TextMesh>().text = "";
+			g.GetComponentInChildren<TextMesh>().text = (i+1).ToString();
 			
 			
         }
@@ -42,16 +46,35 @@ public class ArrangeAlongSphere : MonoBehaviour {
         var points = new List<Vector3>();
         var i = Mathf.PI * (3 - Mathf.Sqrt(5));
         var o = 2 / N;
-        for(var k=0; k<N; k++) {
+        for(var k=0; k<N/2; k++) {
+//			if( k % 2 == 0 ) Radius = 1;
+//			else Radius = 1.1f;
             var y = k * o - 1 + (o / 2);
-            var r = Mathf.Sqrt(1 - y*y);
+            var r = Mathf.Sqrt( 1 - y*y);
             var phi = k * i;
 			//Debug.Log(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
-			if( CubeNo <= 100 && System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" )) == "" )
-			{
-				CubeNo ++;
-				SavePointToFile( new Vector3(Mathf.Cos(phi)*r, y , Mathf.Sin(phi)*r) * scale );
-			}
+//			if( CubeNo <= 100 && System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" )) == "" )
+//			{
+//				CubeNo ++;
+//				SavePointToFile( new Vector3(Mathf.Cos(phi)*r, y , Mathf.Sin(phi)*r) * scale );
+//			}
+			//Debug.Log( "y: " + y );
+//			LinRen.SetVertexCount( CubeNo + 1 );
+//			LinRen.SetPosition( CubeNo, new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale );
+            points.Add(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
+        }
+		 for(var k=N/2; k<N; k++) {
+//			if( k % 2 == 0 ) Radius = 1;
+//			else Radius = 1.1f;
+            var y = k * o - 1 + (o / 2);
+            var r = Mathf.Sqrt( 1f - y*y);
+            var phi = k * i;
+			//Debug.Log(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
+//			if( CubeNo <= 100 && System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" )) == "" )
+//			{
+//				CubeNo ++;
+//				SavePointToFile( new Vector3(Mathf.Cos(phi)*r, y , Mathf.Sin(phi)*r) * scale );
+//			}
 			//Debug.Log( "y: " + y );
 //			LinRen.SetVertexCount( CubeNo + 1 );
 //			LinRen.SetPosition( CubeNo, new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale );
@@ -75,36 +98,38 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		}
 		//CubeMesh = new GameObject[200];
 		
-		if( System.IO.File.Exists( Path + "/CubePoints.xls" ) && System.IO.Directory.Exists( Path )  )
-		{
-			//Debug.Log( "File Already Exists" );
-		}
-		else
-		{
-			System.IO.Directory.CreateDirectory( Path );
-			System.IO.FileStream DataStream = System.IO.File.Create( Path + "/CubePoints.xls" );
-			//Debug.Log( "File Created" );
-		}
-		
-		if( System.IO.File.Exists( Path + "/ConnectedPoints.xls" )  )
-		{
-			//Debug.Log( "Already Exists" );
-		}
-		
-		else
-		{
-		  System.IO.FileStream DataStream = System.IO.File.Create( Path + "/ConnectedPoints.xls" );
-			//Debug.Log( "File Created" );
-		}
-		
+//		if( System.IO.File.Exists( Path + "/CubePoints.xls" ) && System.IO.Directory.Exists( Path )  )
+//		{
+//			//Debug.Log( "File Already Exists" );
+//		}
+//		else
+//		{
+//			System.IO.Directory.CreateDirectory( Path );
+//			System.IO.FileStream DataStream = System.IO.File.Create( Path + "/CubePoints.xls" );
+//			//Debug.Log( "File Created" );
+//		}
+//		
+//		if( System.IO.File.Exists( Path + "/ConnectedPoints.xls" )  )
+//		{
+//			//Debug.Log( "Already Exists" );
+//		}
+//		
+//		else
+//		{
+//		  System.IO.FileStream DataStream = System.IO.File.Create( Path + "/ConnectedPoints.xls" );
+//			//Debug.Log( "File Created" );
+//		}
+//		
 		print ("er");
 		//LinRen = GameObject.Find( "Line" ).GetComponent<LineRenderer>();
 		 Create();
 		Cube = new GameObject[ GameObject.Find( "THE_FINAL_BALL" ).GetComponentsInChildren<MeshRenderer>().Length ];
+		CubeInitialPositions = new Vector3[ Cube.Length ];
 		Debug.Log( Cube.Length );
 		for( int i = 1; i < 51; i++ )
 		{
 			Cube[i] = GameObject.Find( "THE_FINAL_BALL" ).GetComponentsInChildren<MeshFilter>()[i].gameObject;
+			CubeInitialPositions[i] = Cube[i].transform.position;
 			Debug.Log("Pos: " + Cube[i].transform.position.ToString() );
 		}
 		
@@ -125,17 +150,17 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		//	Debug.Log( Nearpoints[k][0].gameObject.transform.position );
 			
 		}
-		if( System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" )) == "" )
-		{
-			for ( int k = 1; k <= 50; k++ )
-			{
-				SavePointToOtherOne( k );
-				Debug.Log( "Data Saved" );
-			}
-		}
+//		if( System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" )) == "" )
+//		{
+//			for ( int k = 1; k <= 50; k++ )
+//			{
+//				SavePointToOtherOne( k );
+//				Debug.Log( "Data Saved" );
+//			}
+//		}
 		
 		//Plotlines();
-		PlotMeshes();
+		PlotMeshes1();
 		//PlotStatic();
 //			int[] Points = new int[6];
 //			Points = NearestPoints( 15 );
@@ -166,13 +191,128 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		}
 	}
 	
+	
+	void PlotMeshes1()
+	{
+		PlotStatic( 34, 21, 26);
+		PlotStatic( 34, 29,21);
+		PlotStatic( 34, 42, 29 );
+		PlotStatic( 34, 39, 42);
+		PlotStatic( 34, 26, 39 );
+		PlotStatic( 4, 12, 7 );
+		PlotStatic( 4, 7, 2 );
+		PlotStatic( 4, 2, 1 );
+		PlotStatic( 4, 1, 9 );
+		PlotStatic( 4, 9, 12 );
+		PlotStatic( 20, 12, 25 );
+		PlotStatic( 20, 25, 33 );
+		PlotStatic( 20, 33, 28 );
+		PlotStatic( 20, 28, 15 );
+		PlotStatic( 20, 15, 7 );
+		PlotStatic( 20, 7, 12 );
+		PlotStatic( 41, 49, 44 );
+		PlotStatic( 41, 44, 36 );
+		PlotStatic( 41, 36, 28 );
+		PlotStatic( 41, 28, 33 );
+		PlotStatic( 41, 33, 46 );
+		PlotStatic( 41, 46, 49 );
+		PlotStatic( 11, 3, 8 );
+		PlotStatic( 11, 8, 16 );
+		PlotStatic( 11, 24, 19 );
+		PlotStatic( 11, 19, 6 );
+		PlotStatic( 11, 6, 3 );
+		PlotStatic( 11, 16, 24 );
+		PlotStatic( 40, 45, 48 );
+		PlotStatic( 40, 48, 43 );
+		PlotStatic( 40, 43, 35 );
+		PlotStatic( 40, 35, 27 );
+		PlotStatic( 40, 27, 32 );
+		PlotStatic( 40, 32, 45 );
+		PlotStatic( 29, 42, 37 );
+		PlotStatic( 29, 37, 24 );
+		PlotStatic( 29, 24, 16 );
+		PlotStatic( 29, 16, 21 );
+		PlotStatic( 29, 21, 34 );
+		PlotStatic( 29, 34, 42 );
+		PlotStatic( 1, 3, 6 );
+		PlotStatic( 1, 6, 9 );
+		PlotStatic( 1, 9, 4 );
+		PlotStatic( 1, 4, 2 );
+		PlotStatic( 1, 2, 3 );
+		PlotStatic( 37, 42, 45 );
+		PlotStatic( 37, 45, 32 );
+		PlotStatic( 37, 32, 24 );
+		PlotStatic( 37, 24, 29 );
+		PlotStatic( 37, 29, 42 );
+		PlotStatic( 14, 9, 6 );
+		PlotStatic( 14, 6, 19 );
+		PlotStatic( 14, 19, 27 );
+		PlotStatic( 14, 27, 22 );
+		PlotStatic( 14, 22, 9 );
+		PlotStatic( 27, 19, 32 );
+		PlotStatic( 24, 32, 19 );
+		PlotStatic( 17, 12, 9 );
+		PlotStatic( 17, 9, 22 );
+		PlotStatic( 17, 22, 30 );
+		PlotStatic( 17, 30, 25 );
+		PlotStatic( 17, 25, 12 );
+		PlotStatic( 38, 25, 30 );
+		PlotStatic( 38, 30, 43 );
+		PlotStatic( 38, 43, 46 );
+		PlotStatic( 38, 46, 33 );
+		PlotStatic( 38, 33, 25 );
+		PlotStatic( 43, 30, 35 );
+		PlotStatic( 35, 30, 22 );
+		PlotStatic( 35, 22, 27 );
+		PlotStatic( 5, 13, 8 );
+		PlotStatic( 5, 8, 3 );
+		PlotStatic( 5, 3, 2 );
+		PlotStatic( 5, 2, 10 );
+		PlotStatic( 5, 10, 18 );
+		PlotStatic( 5, 18, 13 );
+		PlotStatic( 2, 7, 10 );
+		PlotStatic( 10, 15, 10 );
+		PlotStatic( 23, 36, 31 );
+		PlotStatic( 23, 31, 18 );
+		PlotStatic( 23, 18, 10 );
+		PlotStatic( 23, 10, 15 );
+		PlotStatic( 23, 15, 28 );
+		PlotStatic( 23, 28, 36 );
+		PlotStatic( 15, 10, 7 );
+		PlotStatic( 50, 46, 48 );
+		PlotStatic( 50, 49, 46 );
+		PlotStatic( 50, 47, 49 );
+		PlotStatic( 50, 42, 47 );
+		PlotStatic( 50, 48, 42 );
+		PlotStatic( 50, 48, 45 );
+		PlotStatic( 50, 45, 42 );
+		PlotStatic( 46, 43, 48 );
+		PlotStatic( 21, 16, 8 );
+		PlotStatic( 21, 8, 13 );
+		PlotStatic( 26, 21, 13 );
+		PlotStatic( 26, 13, 18 );
+		PlotStatic( 26, 18, 31 );
+		PlotStatic( 26, 31, 39 );
+		PlotStatic( 44, 31, 36 );
+		PlotStatic( 47, 39, 44 );
+		PlotStatic( 47, 42, 39 );
+		PlotStatic( 47, 44, 49 );
+		PlotStatic( 39, 31, 44 );
+		
+		
+		
+		
+		
+		
+		
+	}
 	void Sort(int [] Points , int index){
 		
 		
 		
 		
 	}
-	void PlotStatic()
+	void PlotStatic( int Index, int a, int b )
 	{
 					CubeMesh[val].AddComponent("MeshFilter"); 
 					CubeMesh[val].AddComponent("MeshRenderer"); 
@@ -180,7 +320,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 					Mesh newmesh = new Mesh();
 					Debug.Log(newmesh);
 					//Debug.Log(Index);
-					Vector3 []vert = new Vector3[3]{Cube[22].transform.position,Cube[30].transform.position,Cube[17].transform.position};
+					Vector3 []vert = new Vector3[3]{Cube[Index].transform.position,Cube[a].transform.position,Cube[b].transform.position};
 					newmesh.vertices = vert;
 					Vector2 []uvs = new Vector2[3]; 
 			 		for (int k=0; k<uvs.Length; k++)
@@ -190,6 +330,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 			 		newmesh.uv = uvs;
 					//CubeMesh[val].GetComponent<MeshRenderer>().materials[0]. = new Color( Random.Range( 1,255),Random.Range( 1,255),Random.Range( 1,255),1);
 					newmesh.triangles = new int[]{2,0,1};
+					newmesh.RecalculateNormals();
 					CubeMesh[val].GetComponent<MeshFilter>().mesh = newmesh;
 					//int R = Random.Range(0,4);
 					CubeMesh[val].renderer.material = Matt;
@@ -203,7 +344,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		{
 			int[] Points = new int[12];
 			Points = NearestPoints( i );
-			DrawTriangles( i, Points );
+			//DrawTriangles( i, Points );
 		}
 	}
 	
@@ -443,7 +584,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		return CubeNo;
 	}
 	
-	void DrawTriangles( int Index, int[] Plot )
+	void DrawTriangles1( int Index, int[] Plot )
 	{
 		//Debug.Log(Plot[0]+" "+Plot[1]+" "+Plot[2]+" "+Plot[3]+" "+Plot[4]+" "+Plot[5]+" "+Plot[6]+" "+Plot[7]);
 		
@@ -2037,15 +2178,39 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	
 	private void SavePointToFile( Vector3 Point )
 	{
-		string PreviousData = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" ));
-		string DataToSave = PreviousData + CubeNo + "\t" + Point.ToString() + "\n";
-		var bytes = System.Text.Encoding.UTF8.GetBytes( DataToSave );
-		System.IO.File.WriteAllBytes ( GetDocumentsDirectoryPath() + "/CubePoints.xls", bytes );
+//		string PreviousData = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" ));
+//		string DataToSave = PreviousData + CubeNo + "\t" + Point.ToString() + "\n";
+//		var bytes = System.Text.Encoding.UTF8.GetBytes( DataToSave );
+//		System.IO.File.WriteAllBytes ( GetDocumentsDirectoryPath() + "/CubePoints.xls", bytes );
 	}
 	
 	
 	void Update()
 	{
+		
+		if( RotationB.Draw )
+		{
+			GameObject.Find( "Line1" ).transform.parent = GameObject.Find( "THE_FINAL_BALL" ).transform;
+			for( int i = 1; i <= 50; i++ )
+			{
+				if( Cube[i].transform.name == RotationB.CubeName )
+				{
+//					for( int j = 1; j < 51; j++ )
+//						{
+//							Cube[j] = GameObject.Find( "THE_FINAL_BALL" ).GetComponentsInChildren<MeshFilter>()[j].gameObject;
+//							Debug.Log("Pos: " + Cube[i].transform.position.ToString() );
+//						}
+					int[] Points = new int[6];
+					Points = NearestPoints( i );
+					DrawLinesOnClick( i, Points);
+					break;
+				}
+			}
+			
+			RotationB.Draw = false;
+		}
+		else
+			GameObject.Find( "Line1" ).transform.parent = transform.parent;
 		
 //		for( int j = 0; j < Cube.Length; j++ )
 //		{	
@@ -2077,114 +2242,114 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		return Path;
 	}
 	
-	public Vector3 GetPoint( int Index )
-	{
-		string Data = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" ));
-		int PositionOfIndex = Data.IndexOf( "\n" + Index + "\t") + "\n".Length + Index.ToString().Length;
-		string TrimmedData = Data.Substring( PositionOfIndex, Data.Length - PositionOfIndex );
-		int IndexOfcloseBracket = TrimmedData.IndexOf( ")" );
-		TrimmedData = TrimmedData.Substring( 0, IndexOfcloseBracket );
-		TrimmedData = TrimmedData.Replace( Index.ToString(), "" ).Trim();
-		var Numbers = TrimmedData.Split( ","[0]);
-		Numbers[0] = Numbers[0].Replace( "(", "");
-		Numbers[2] = Numbers[2].Replace( ")", "");
-//		Debug.Log( Numbers[0] + Numbers[1] + Numbers[2]);
-		Vector3 ReturnVector = new Vector3( float.Parse( Numbers[0] ), float.Parse( Numbers[1] ), float.Parse( Numbers[2] ));
-		return ReturnVector;
-	}
+//	public Vector3 GetPoint( int Index )
+//	{
+////		string Data = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" ));
+////		int PositionOfIndex = Data.IndexOf( "\n" + Index + "\t") + "\n".Length + Index.ToString().Length;
+////		string TrimmedData = Data.Substring( PositionOfIndex, Data.Length - PositionOfIndex );
+////		int IndexOfcloseBracket = TrimmedData.IndexOf( ")" );
+////		TrimmedData = TrimmedData.Substring( 0, IndexOfcloseBracket );
+////		TrimmedData = TrimmedData.Replace( Index.ToString(), "" ).Trim();
+////		var Numbers = TrimmedData.Split( ","[0]);
+////		Numbers[0] = Numbers[0].Replace( "(", "");
+////		Numbers[2] = Numbers[2].Replace( ")", "");
+//////		Debug.Log( Numbers[0] + Numbers[1] + Numbers[2]);
+////		Vector3 ReturnVector = new Vector3( float.Parse( Numbers[0] ), float.Parse( Numbers[1] ), float.Parse( Numbers[2] ));
+////		return ReturnVector;
+//	}
 	
-	public Vector3[] GetTargetPoints1( int Index )
-	{
-		string Data = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" ));
-//		int PositionOfIndex = Data.IndexOf( "\n" + Index + "\t") + "\n".Length;
-//		var TrimmedData = Data.Substring( PositionOfIndex, Data.Length - PositionOfIndex );
-//		int IndexofNextLine = TrimmedData.IndexOf( "\n" + ( Index + 1).ToString() );
-//		//Debug.Log( IndexofNextLine );
-//		TrimmedData = TrimmedData.Substring( 0, IndexofNextLine );
-//		TrimmedData = TrimmedData.Replace( Index.ToString(), "" ).Trim();
-//		string[] VectorString = new string[10];
-//		VectorString = TrimmedData.Split( new string[]{ ")" + "\t" + "("}, System.StringSplitOptions.None );
-//		var v3Array = new Vector3 [ VectorString.Length ];
-//		for( int i = 0; i < VectorString.Length; i++ )
-//			{
-// 				//Debug.Log( VectorString[i] );
-//				var numbers = VectorString[i].Split( ","[0] );
-//				numbers[0] = numbers[0].Replace( "(", "");
-//				
-//				//Debug.Log( numbers[0]);
-//				//Debug.Log( numbers[1]);
-//				//Debug.Log( numbers[2]);
-//				numbers[2] = numbers[2].Replace( ")", "");
-//				//Debug.Log( numbers[0] );
-//      		    v3Array[i] = new Vector3( float.Parse(numbers[0]), float.Parse(numbers[1]), float.Parse(numbers[2] ) );
-//			} 
-//		return v3Array;
-		
-			int Index0 = ( Index.ToString() + "\t").Length;
-			int Index1 = Data.IndexOf( "\n" );//Mathf.Min ( Data.IndexOf( "\n" ) ,Data.IndexOf( "\t" + "(0.0, 0.0, 0.0)" ) );
-			//Debug.Log( Index0 + " " + (Index1 - Index0).ToString() );
-			var DataArray = Data.Substring( Index0, Index1 - Index0 ).Replace("\"", "" ).Split ( new string []{ ")"+"\t"+"("}, System.StringSplitOptions.None );
-			//Debug.Log( DataArray[0] );
-			var v3Array = new Vector3 [ DataArray.Length ];
-			for( int i = 0; i < DataArray.Length; i++ )
-			{
- 				//Debug.Log( DataArray[i] );
-			 	DataArray[i] = DataArray[i].Replace( "\"", "" );
-				var numbers = DataArray[i].Split( ","[0] );
-				numbers[0] = numbers[0].Replace( "(", "");
-				
-				//Debug.Log( numbers[0]);
-				//Debug.Log( numbers[1]);
-				
-				numbers[2] = numbers[2].Replace( ")", "");
-				//Debug.Log( numbers[2]);
-      		    v3Array[i] = new Vector3( float.Parse(numbers[0]), float.Parse(numbers[1]), float.Parse(numbers[2] ) );
-			}
-			return v3Array;
-	}
+//	public Vector3[] GetTargetPoints1( int Index )
+//	{
+////		string Data = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" ));
+//////		int PositionOfIndex = Data.IndexOf( "\n" + Index + "\t") + "\n".Length;
+//////		var TrimmedData = Data.Substring( PositionOfIndex, Data.Length - PositionOfIndex );
+//////		int IndexofNextLine = TrimmedData.IndexOf( "\n" + ( Index + 1).ToString() );
+//////		//Debug.Log( IndexofNextLine );
+//////		TrimmedData = TrimmedData.Substring( 0, IndexofNextLine );
+//////		TrimmedData = TrimmedData.Replace( Index.ToString(), "" ).Trim();
+//////		string[] VectorString = new string[10];
+//////		VectorString = TrimmedData.Split( new string[]{ ")" + "\t" + "("}, System.StringSplitOptions.None );
+//////		var v3Array = new Vector3 [ VectorString.Length ];
+//////		for( int i = 0; i < VectorString.Length; i++ )
+//////			{
+////// 				//Debug.Log( VectorString[i] );
+//////				var numbers = VectorString[i].Split( ","[0] );
+//////				numbers[0] = numbers[0].Replace( "(", "");
+//////				
+//////				//Debug.Log( numbers[0]);
+//////				//Debug.Log( numbers[1]);
+//////				//Debug.Log( numbers[2]);
+//////				numbers[2] = numbers[2].Replace( ")", "");
+//////				//Debug.Log( numbers[0] );
+//////      		    v3Array[i] = new Vector3( float.Parse(numbers[0]), float.Parse(numbers[1]), float.Parse(numbers[2] ) );
+//////			} 
+//////		return v3Array;
+////		
+////			int Index0 = ( Index.ToString() + "\t").Length;
+////			int Index1 = Data.IndexOf( "\n" );//Mathf.Min ( Data.IndexOf( "\n" ) ,Data.IndexOf( "\t" + "(0.0, 0.0, 0.0)" ) );
+////			//Debug.Log( Index0 + " " + (Index1 - Index0).ToString() );
+////			var DataArray = Data.Substring( Index0, Index1 - Index0 ).Replace("\"", "" ).Split ( new string []{ ")"+"\t"+"("}, System.StringSplitOptions.None );
+////			//Debug.Log( DataArray[0] );
+////			var v3Array = new Vector3 [ DataArray.Length ];
+////			for( int i = 0; i < DataArray.Length; i++ )
+////			{
+//// 				//Debug.Log( DataArray[i] );
+////			 	DataArray[i] = DataArray[i].Replace( "\"", "" );
+////				var numbers = DataArray[i].Split( ","[0] );
+////				numbers[0] = numbers[0].Replace( "(", "");
+////				
+////				//Debug.Log( numbers[0]);
+////				//Debug.Log( numbers[1]);
+////				
+////				numbers[2] = numbers[2].Replace( ")", "");
+////				//Debug.Log( numbers[2]);
+////      		    v3Array[i] = new Vector3( float.Parse(numbers[0]), float.Parse(numbers[1]), float.Parse(numbers[2] ) );
+////			}
+////			return v3Array;
+//	}
 	
-	public Vector3[] GetTargetPoints( int Index )
-	{
-		string Data = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" ));
-		int[] PointsInd = new int[2];
-		Vector3[] varray = new Vector3[2];
-		int Index0;
-		if( Index == 1 )
-		{
-			Index0 =  Data.IndexOf( Index.ToString() + "\t" ) + ( Index.ToString() + "\t").Length;
-		}
-		else
-		{
-			Index0 =  Data.IndexOf( "\n" + Index.ToString() + "\t" ) + ( "\n" + Index.ToString() + "\t").Length;
-		}
-		Debug.Log( "Index 0 "+ Index0 );
-		Data = Data.Substring( Index0, Data.Length - Index0 );
-		int Index1 = 4;
-		Debug.Log( Data );
-		//Debug.Log( Index0 + " " + (Index1 - Index0).ToString() );
-		Debug.Log( Data.Substring( 0, 4 ));
-		var DataArray = Data.Substring( 0, 4 ).Split ( new string []{ "\t" }, System.StringSplitOptions.None );
-		Debug.Log( DataArray[0] + " " + DataArray[1] );
-		for( int i = 0; i < DataArray.Length; i++ )
-		{
-			Debug.Log( DataArray[i] );
-			PointsInd[i] = int.Parse( DataArray[i] );
-			varray[i] = GetPoint( PointsInd[i] );
-		}
-		return varray;
-	}
+//	public Vector3[] GetTargetPoints( int Index )
+//	{
+////		string Data = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" ));
+////		int[] PointsInd = new int[2];
+////		Vector3[] varray = new Vector3[2];
+////		int Index0;
+////		if( Index == 1 )
+////		{
+////			Index0 =  Data.IndexOf( Index.ToString() + "\t" ) + ( Index.ToString() + "\t").Length;
+////		}
+////		else
+////		{
+////			Index0 =  Data.IndexOf( "\n" + Index.ToString() + "\t" ) + ( "\n" + Index.ToString() + "\t").Length;
+////		}
+////		Debug.Log( "Index 0 "+ Index0 );
+////		Data = Data.Substring( Index0, Data.Length - Index0 );
+////		int Index1 = 4;
+////		Debug.Log( Data );
+////		//Debug.Log( Index0 + " " + (Index1 - Index0).ToString() );
+////		Debug.Log( Data.Substring( 0, 4 ));
+////		var DataArray = Data.Substring( 0, 4 ).Split ( new string []{ "\t" }, System.StringSplitOptions.None );
+////		Debug.Log( DataArray[0] + " " + DataArray[1] );
+////		for( int i = 0; i < DataArray.Length; i++ )
+////		{
+////			Debug.Log( DataArray[i] );
+////			PointsInd[i] = int.Parse( DataArray[i] );
+////			varray[i] = GetPoint( PointsInd[i] );
+////		}
+////		return varray;
+//	}
 	
 	void Plotlines()
 	{
 		for ( int i = 1; i <= 50; i++)
 		{
-			int[] Points = new int[7];
+			int[] Points = new int[6];
 			Points = NearestPoints( i );
 			DrawLines( i, Points);
 		}
 	}
 	
-	void DrawLines( int Index, int[] Plot )
+	private void DrawLines( int Index, int[] Plot )
 	{
 		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
 		LinRen.SetVertexCount( 2 );
@@ -2216,11 +2381,11 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetPosition( 1, Cube[ Plot[5] ].transform.position);
 		LineIndex++;
 		
-		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
-		LinRen.SetVertexCount( 2 );
-		LinRen.SetPosition( 0, Cube[Index].transform.position );
-		LinRen.SetPosition( 1, Cube[ Plot[6] ].transform.position);
-		LineIndex++;
+//		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
+//		LinRen.SetVertexCount( 2 );
+//		LinRen.SetPosition( 0, Cube[Index].transform.position );
+//		LinRen.SetPosition( 1, Cube[ Plot[6] ].transform.position);
+//		LineIndex++;
 		
 //		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
 //		LinRen.SetVertexCount( 2 );
@@ -2229,68 +2394,122 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		LineIndex++;
 		
 	}
-	void DrawAlllines( int Index )
+	
+	private void DrawLinesOnClick( int Index, int[] Plot )
 	{
-		Vector3 Start = GetPoint( Index );
-		Debug.Log("Srtatt: " + Index );
-		Vector3[] target = GetTargetPoints( Index );
-		Mesh mMesh = new Mesh();
-		Vector3[] MeshTargets = new Vector3[3]{ Start, target[0], target[1] };
-		Debug.Log( Start + " " + target[0] + " " + target[1] );
-		TargetCube = Physics.OverlapSphere( target[0], 0.1f );
-//		//Debug.Log( TargetCube[0].gameObject.name );
-		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
-		LinRen.SetVertexCount( 2 );
-		LinRen.SetPosition( 0, Start );
-		//Debug.Log(" hahahahhahahah: " + TargetCube[0].gameObject.transform.position );
-		//LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
-		LinRen.SetPosition( 1, target[0] );
-		LineIndex++;
-//		
-		TargetCube = Physics.OverlapSphere( target[1], 0.1f );
-//		//Debug.Log( TargetCube[0].gameObject.name );
-		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
-		LinRen.SetVertexCount( 2 );
-		LinRen.SetPosition( 0, Start );
-		//Debug.Log( TargetCube[0].GetType() );
-		//LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
-		LinRen.SetPosition( 1, target[1] );
-		LineIndex++;
-		mMesh.vertices= MeshTargets;
-		mMesh.uv = new Vector2[]{ new Vector2 (0, 0), new Vector2 (0, 1), new Vector2(1, 1), new Vector2 (1, 0) };
-		mMesh.triangles = new int[]{ 0, 1, 2, 0, 2, 3 };
-		mMesh.RecalculateNormals();
-		var G2 = Instantiate( GameObject.CreatePrimitive( PrimitiveType.Plane ), Start, Quaternion.identity ) as GameObject;
-		G2.transform.parent = transform;
-		G2.gameObject.GetComponent<MeshFilter>().mesh = mMesh;
-//		//Debug.Log("target[2]"+target[2]);
-//		
-//		TargetCube = Physics.OverlapSphere( target[2], 1.0f );
-//		//Debug.Log( TargetCube[0].gameObject.name );
-////		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
-////		LinRen.SetVertexCount( 2 );
-////		LinRen.SetPosition( 0, Start );
-////		//Debug.Log( TargetCube[0].GetType() );
-////		LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
-//		//Debug.Log( TargetCube[0].GetType() );
-//		LineIndex++;
-//		TargetCube = Physics.OverlapSphere( target[3], 0.1f );
-//		//Debug.Log( TargetCube[0].gameObject.name );
-////		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
-////		LinRen.SetVertexCount( 2 );
-////		LinRen.SetPosition( 0, Start );
-////		LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
-//		LineIndex++;
-//		
-////		TargetCube = Physics.OverlapSphere( target[4], 0.1f );
-////		//Debug.Log( TargetCube[0].gameObject.name );
-////		LinRen = GameObject.Find( "Line5" ).GetComponent<LineRenderer>();
-////		LinRen.SetVertexCount( 2 );
-////		LinRen.SetPosition( 0, Start );
-////		LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
 		
+		Debug.Log( "Target Cube " + Cube[Index].transform.position );
+		LineIndex1 = 2;
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .05f, .05f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[Index]  );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[1] ] );
+		LineIndex1++;
+		
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .05f, .05f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[2] ]);
+		LineIndex1++;
+		
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .05f, .05f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[3] ]);
+		LineIndex1++;
+		
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .05f, .05f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[4] ]);
+		LineIndex1++;
+		
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .05f, .05f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[5] ]);
+		LineIndex1++;
+		
+//		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+//		LinRen.SetVertexCount( 2 );
+//		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
+//		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[6] ]);
+//		LineIndex1++;
+		
+//		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
+//		LinRen.SetVertexCount( 2 );
+//		LinRen.SetPosition( 0, Cube[Index].transform.position );
+//		LinRen.SetPosition( 1, Cube[ Plot[7] ].transform.position);
+//		LineIndex++;
 		
 	}
+//	void DrawAlllines( int Index )
+//	{
+//		Vector3 Start = GetPoint( Index );
+//		Debug.Log("Srtatt: " + Index );
+//		Vector3[] target = GetTargetPoints( Index );
+//		Mesh mMesh = new Mesh();
+//		Vector3[] MeshTargets = new Vector3[3]{ Start, target[0], target[1] };
+//		Debug.Log( Start + " " + target[0] + " " + target[1] );
+//		TargetCube = Physics.OverlapSphere( target[0], 0.1f );
+////		//Debug.Log( TargetCube[0].gameObject.name );
+//		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
+//		LinRen.SetVertexCount( 2 );
+//		LinRen.SetPosition( 0, Start );
+//		//Debug.Log(" hahahahhahahah: " + TargetCube[0].gameObject.transform.position );
+//		//LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
+//		LinRen.SetPosition( 1, target[0] );
+//		LineIndex++;
+////		
+//		TargetCube = Physics.OverlapSphere( target[1], 0.1f );
+////		//Debug.Log( TargetCube[0].gameObject.name );
+//		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
+//		LinRen.SetVertexCount( 2 );
+//		LinRen.SetPosition( 0, Start );
+//		//Debug.Log( TargetCube[0].GetType() );
+//		//LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
+//		LinRen.SetPosition( 1, target[1] );
+//		LineIndex++;
+//		mMesh.vertices= MeshTargets;
+//		mMesh.uv = new Vector2[]{ new Vector2 (0, 0), new Vector2 (0, 1), new Vector2(1, 1), new Vector2 (1, 0) };
+//		mMesh.triangles = new int[]{ 0, 1, 2, 0, 2, 3 };
+//		mMesh.RecalculateNormals();
+//		var G2 = Instantiate( GameObject.CreatePrimitive( PrimitiveType.Plane ), Start, Quaternion.identity ) as GameObject;
+//		G2.transform.parent = transform;
+//		G2.gameObject.GetComponent<MeshFilter>().mesh = mMesh;
+////		//Debug.Log("target[2]"+target[2]);
+////		
+////		TargetCube = Physics.OverlapSphere( target[2], 1.0f );
+////		//Debug.Log( TargetCube[0].gameObject.name );
+//////		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
+//////		LinRen.SetVertexCount( 2 );
+//////		LinRen.SetPosition( 0, Start );
+//////		//Debug.Log( TargetCube[0].GetType() );
+//////		LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
+////		//Debug.Log( TargetCube[0].GetType() );
+////		LineIndex++;
+////		TargetCube = Physics.OverlapSphere( target[3], 0.1f );
+////		//Debug.Log( TargetCube[0].gameObject.name );
+//////		LinRen = GameObject.Find( "Line" + LineIndex ).GetComponent<LineRenderer>();
+//////		LinRen.SetVertexCount( 2 );
+//////		LinRen.SetPosition( 0, Start );
+//////		LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
+////		LineIndex++;
+////		
+//////		TargetCube = Physics.OverlapSphere( target[4], 0.1f );
+//////		//Debug.Log( TargetCube[0].gameObject.name );
+//////		LinRen = GameObject.Find( "Line5" ).GetComponent<LineRenderer>();
+//////		LinRen.SetVertexCount( 2 );
+//////		LinRen.SetPosition( 0, Start );
+//////		LinRen.SetPosition( 1, TargetCube[0].gameObject.transform.position );
+//		
+//		
+//	}
 	
 	void SavePointToOtherOne1( int TargetIndex )
 	{
@@ -2315,24 +2534,24 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		TargetPoints[3] = TargetIndex + 4 ;//new Vector3( 0.8f, -1.8f, -0.5f );
 //		
 //		TargetPoints[4] = TargetIndex + 5 ;//new Vector3( -0.3f, -1.7f, 1.0f );
-		string PreviousData = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" ));
-		string DataToSave = PreviousData + TargetIndex.ToString() + "\t" + TargetPoints[0].ToString() + "\t" + TargetPoints[1].ToString() + /*"\t" + TargetPoints[2].ToString() + "\t" + TargetPoints[3].ToString() + "\t" + TargetPoints[4].ToString() + "\t" +*/ "\n";
-		DataToSave = DataToSave.Replace( "0", "");
-		var bytes = System.Text.Encoding.UTF8.GetBytes( DataToSave );
-		System.IO.File.WriteAllBytes ( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls", bytes );
+//		string PreviousData = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" ));
+//		string DataToSave = PreviousData + TargetIndex.ToString() + "\t" + TargetPoints[0].ToString() + "\t" + TargetPoints[1].ToString() + /*"\t" + TargetPoints[2].ToString() + "\t" + TargetPoints[3].ToString() + "\t" + TargetPoints[4].ToString() + "\t" +*/ "\n";
+//		DataToSave = DataToSave.Replace( "0", "");
+//		var bytes = System.Text.Encoding.UTF8.GetBytes( DataToSave );
+//		System.IO.File.WriteAllBytes ( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls", bytes );
 	}
 	
 	void SavePointToOtherOne( int Index )
 	{
-		string PreviousData = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" ));
-		string PointsToSave = "";
-		for( int i = 0; i < Nearpoints[ Index ].Length; i++ )
-		{
-			PointsToSave = PointsToSave + "\t" + Nearpoints[ Index ][i].gameObject.transform.position;
-		}
-		string DataToSave = PreviousData + Index.ToString() + PointsToSave + "\n";//"\t" + Nearpoints[ Index ][0].gameObject.transform.position + "\t" + Nearpoints[ Index ][1].gameObject.transform.position + "\n";// + "\t" + Nearpoints[ Index ][2].gameObject.transform.position + "\t" + Nearpoints[ Index ][3].gameObject.transform.position + "\n" ;
-		var bytes = System.Text.Encoding.UTF8.GetBytes( DataToSave );
-		System.IO.File.WriteAllBytes ( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls", bytes );
+//		string PreviousData = System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls" ));
+//		string PointsToSave = "";
+//		for( int i = 0; i < Nearpoints[ Index ].Length; i++ )
+//		{
+//			PointsToSave = PointsToSave + "\t" + Nearpoints[ Index ][i].gameObject.transform.position;
+//		}
+//		string DataToSave = PreviousData + Index.ToString() + PointsToSave + "\n";//"\t" + Nearpoints[ Index ][0].gameObject.transform.position + "\t" + Nearpoints[ Index ][1].gameObject.transform.position + "\n";// + "\t" + Nearpoints[ Index ][2].gameObject.transform.position + "\t" + Nearpoints[ Index ][3].gameObject.transform.position + "\n" ;
+//		var bytes = System.Text.Encoding.UTF8.GetBytes( DataToSave );
+//		System.IO.File.WriteAllBytes ( GetDocumentsDirectoryPath() + "/ConnectedPoints.xls", bytes );
 	}
 	
 	float CalculateDistance( Vector3 a, Vector3 b )
@@ -2374,6 +2593,46 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		}
 		
 		int[] Result = new int[12];
+		//Result = CubeNo;
+		for( int i = 0; i<= 11; i++ )
+		{
+			Result[i] = CubeNo[i+1];
+		}
+		return Result;
+	}
+	
+	private Vector3[] NearestPointsVectors( int Index )
+	{
+		float[] Distance = new float[51];
+		Vector3[] CubeNo = new Vector3[51];
+		for ( int i = 1; i <= 50; i++ )
+		{
+			Distance[i] =  CalculateDistance ( Cube[ Index ].transform.position, Cube[i].transform.position );
+			CubeNo[i] = Cube[i].transform.position;
+		}
+		for ( int i = 1; i <= 50; i++ )
+		{
+			for ( int j = 1; j <= 50; j++ )
+			{
+				if( Distance[i] < Distance[j] )
+				{
+					float temp = Distance[i];
+					Vector3 temp1 = CubeNo[i];
+					Distance[i] = Distance[j];
+					CubeNo[i] = CubeNo[j];
+					Distance[j] = temp;
+					CubeNo[j] = temp1;
+				}
+			}
+		}
+		
+//		for( int i = 1; i <= 50; i++ )
+//		{
+//			Debug.Log( Distance[i] );
+//			Debug.Log( CubeNo[i]);
+//		}
+		
+		Vector3[] Result = new Vector3[12];
 		//Result = CubeNo;
 		for( int i = 0; i<= 11; i++ )
 		{

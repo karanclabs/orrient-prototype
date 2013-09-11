@@ -3,7 +3,7 @@
 var previousDistance:float =0;
 var camera1:Camera;
 var zoomNow : boolean;
-var fov1:float;
+static var fov1:float;
 
 function Start () {
 	camera1 = this.gameObject.GetComponent(Camera);
@@ -12,7 +12,7 @@ function Start () {
 
 function Update () {
 	
-	if (Input.touchCount >= 2 ) {
+	/*if (Input.touchCount >= 2 ) {
 		var touch0:Touch;
 		var touch1:Touch;
 		var newDistance: float;
@@ -45,5 +45,24 @@ function Update () {
 	}
 	else {
 		zoomNow = false;
-	}     
+	} 
+	*/
+	
+	if (Input.GetAxis("Mouse ScrollWheel")> 0)
+	{
+		
+		fov1 -=Time.deltaTime*300 ;// fovSpeed--;
+		camera1.fieldOfView =fov1;
+	}
+
+	if (Input.GetAxis("Mouse ScrollWheel")< 0)
+	{
+		
+		fov1 += Time.deltaTime*300;// fov ++;
+		camera1.fieldOfView =fov1;
+	}
+	if(fov1<5) fov1=5;
+	if(fov1>60) fov1 =60;
+
+//	camera1.fieldOfView = Input.GetAxis("Mouse ScrollWheel");    
 }
