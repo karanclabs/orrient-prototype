@@ -6,11 +6,12 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	public static int CubeNo = 0;
    private  int count = 50;
    private  float size = 2;
-   private GameObject[] Cube; 
+   private static GameObject[] Cube; 
 	private GameObject[] CubeMesh;
  	public GameObject Linerenderer;
 	public GameObject Sphere;
 	Vector3[] CubeInitialPositions;
+	public static Vector3[] StaticCuceInitialPositions;
 	private PrimitiveType mPrimitiveType;
 	LineRenderer LinRen; 
 	static int LineIndex = 1;
@@ -21,7 +22,60 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	Collider[] TargetCube;
 	public Material Matt;
 	public GameObject empty;
-	
+	public static Quaternion RotationValue;
+	public GameObject Popup, Label;
+	private string[] Names = new string[]{ "Samar", "Sanjay", "Tanuj", "Ankush", "Tanuj"};
+	private string[] Topics = new string[ 51 ]{ "",
+												"Movies",
+												"Ethnicity",
+												"Culture",
+												"Speech",
+												"Love",
+												"Friendship",
+												"Travel",
+												"Sports",
+												"Nature",
+												"TV Shows",
+												"Music",
+												"Dance",
+												"Business",
+												"Technology",
+												"Mobile",
+												"Tablets",
+												"Nation",
+												"Religion",
+												"History",
+												"Books",
+												"e-Books",
+												"Health",
+												"Science",
+												"Kids",
+												"Youth",
+												"Marriage",
+												"Art",
+												"Nature",
+												"Gaming",
+												"Banking",
+												"Design",
+												"Start Ups",
+												"Photography",
+												"Fitness",
+												"Home Decor",
+												"Gaming",
+												"Holidays",
+												"Languages",
+												"Currency",
+												"Careers",
+												"Fashion",
+												"Craft",
+												"Beauty",
+												"Food",
+												"Hair",
+												"Animals",
+												"Gardening",
+												"Cars",
+												"Social",
+												"Hapiness"};//{ "Samar", "Sanjay", "Tanuj", "Ankush", "Tanuj"};
 	float Radius;
 	//private List<Collider[]> Nearpoints = new List<Collider[]>();
 	static Collider[][] Nearpoints = new Collider[51][];
@@ -34,7 +88,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
             var g = Instantiate(prefab, transform.position+points[i], Quaternion.identity) as GameObject;
 			
             g.transform.parent = transform;
-
+			//g.GetComponentInChildren<UISprite>().gameObject.SetActive(false);
 			g.transform.name = "Cube"+(i+1).ToString();
 			g.GetComponentInChildren<TextMesh>().text = (i+1).ToString();
 			
@@ -67,7 +121,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //			if( k % 2 == 0 ) Radius = 1;
 //			else Radius = 1.1f;
             var y = k * o - 1 + (o / 2);
-            var r = Mathf.Sqrt( 1f - y*y);
+            var r = Mathf.Sqrt( 1 - y*y);
             var phi = k * i;
 			//Debug.Log(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
 //			if( CubeNo <= 100 && System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" )) == "" )
@@ -85,7 +139,12 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	
 	void Start(){
 		
+//		for( int g = 1; g <= 50; g++ )
+//		{
+//			Topics[g] = "Topic" + (51-g).ToString();
+//		}
 		
+		QualitySettings.antiAliasing = 8;
 		var Path = Application.dataPath.Substring ( 0, Application.dataPath.Length - 5 );
 		Path = Path.Substring( 0, Path.LastIndexOf( '/') );
 		Path = Path + "/Documents";
@@ -132,7 +191,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 			CubeInitialPositions[i] = Cube[i].transform.position;
 			Debug.Log("Pos: " + Cube[i].transform.position.ToString() );
 		}
-		
+		StaticCuceInitialPositions = CubeInitialPositions;
 		VertexCount = Cube.Length;
 		
 		for ( int i = 1; i < 500; i++ )
@@ -159,7 +218,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //			}
 //		}
 		
-		//Plotlines();
+		Plotlines();
 		PlotMeshes1();
 		//PlotStatic();
 //			int[] Points = new int[6];
@@ -2184,7 +2243,11 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		System.IO.File.WriteAllBytes ( GetDocumentsDirectoryPath() + "/CubePoints.xls", bytes );
 	}
 	
-	
+	public static Vector3 GetCubePosition( int Index )
+	{
+		Vector3 Position = Cube[Index].transform.position;
+		return Position;
+	}
 	void Update()
 	{
 		
@@ -2219,20 +2282,21 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //			LinRen.SetPosition( j, Cube[j + 1].transform.position );
 //			//Debug.Log( "LineDrawn" );
 //		}
-		
+		//Debug.Log( Cube[10].transform.position + " " + Cube[10].transform.localPosition);
+		FreezeRotationOfPopups();
 //		
 		//DrawAlllines( 1 );
 		
 	}
 	
-	 void OnDrawGizmosSelected() {
+	 //void OnDrawGizmosSelected() {
 //        Gizmos.color = Color.white;
 //        Gizmos.DrawWireSphere(transform.position, explosionRadius);
-		   Vector3 center = renderer.bounds.center;
-        float radius = renderer.bounds.extents.magnitude;
-        Gizmos.color = Color.white;
-        Gizmos.DrawWireSphere(center, radius);
-    }
+//		   Vector3 center = renderer.bounds.center;
+//        float radius = renderer.bounds.extents.magnitude;
+//        Gizmos.color = Color.white;
+//        Gizmos.DrawWireSphere(center, radius);
+//    }
 	
 	static string GetDocumentsDirectoryPath()
 	{
@@ -2397,6 +2461,18 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	
 	private void DrawLinesOnClick( int Index, int[] Plot )
 	{
+		GameObject g = Instantiate( Popup,  new Vector3(Cube[Index].transform.position.x, Cube[Index].transform.position.y + .2f ,Cube[Index].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		g.transform.LookAt( Camera.main.transform.position );
+		g.transform.parent = Cube[Index].transform;
+		g.transform.name = "Sprite1"; 
+		RotationValue = g.transform.rotation;
+		GameObject l = Instantiate( Label,  new Vector3(Cube[Index].transform.position.x, Cube[Index].transform.position.y + .2f ,Cube[Index].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		l.transform.LookAt( -Camera.main.transform.position );
+		l.transform.parent = Cube[Index].transform;
+		l.transform.name = "Label1"; 
+		//int b = Random.Range( 0, 4 );
+		l.GetComponent<UILabel>().text = Topics[Index];
+//		l.GetComponent<UILabel>().GetComponent<MeshFilter>().mesh.RecalculateNormals();
 		
 		Debug.Log( "Target Cube " + Cube[Index].transform.position );
 		LineIndex1 = 2;
@@ -2405,6 +2481,16 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index]  );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[1] ] );
+		GameObject g1 = Instantiate( Popup,  new Vector3(Cube[Plot[1]].transform.position.x, Cube[Plot[1]].transform.position.y + .2f ,Cube[Plot[1]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		g1.transform.LookAt( Camera.main.transform.position );
+		g1.transform.parent = Cube[Plot[1]].transform;
+		g1.transform.name = "Sprite2"; 
+		GameObject l1 = Instantiate( Label,  new Vector3(Cube[Plot[1]].transform.position.x, Cube[Plot[1]].transform.position.y + .2f ,Cube[Plot[1]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		l1.transform.LookAt( -Camera.main.transform.position );
+		l1.transform.parent = Cube[Plot[1]].transform;
+		l1.transform.name = "Label2";
+		//int b1 = Random.Range( 0, 4 );
+		l1.GetComponent<UILabel>().text = Topics[Plot[1]];
 		LineIndex1++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2412,6 +2498,16 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[2] ]);
+		GameObject g2 = Instantiate( Popup,  new Vector3(Cube[Plot[2]].transform.position.x, Cube[Plot[2]].transform.position.y + .2f ,Cube[Plot[2]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		g2.transform.LookAt( Camera.main.transform.position );
+		g2.transform.parent = Cube[Plot[2]].transform;
+		g2.transform.name = "Sprite3"; 
+		GameObject l2 = Instantiate( Label,  new Vector3(Cube[Plot[2]].transform.position.x, Cube[Plot[2]].transform.position.y + .2f ,Cube[Plot[2]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		l2.transform.LookAt( -Camera.main.transform.position );
+		l2.transform.parent = Cube[Plot[2]].transform;
+		l2.transform.name = "Label3";
+		//int b2 = Random.Range( 0, 4 );
+		l2.GetComponent<UILabel>().text = Topics[Plot[2]];
 		LineIndex1++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2419,6 +2515,16 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[3] ]);
+		GameObject g3 = Instantiate( Popup,  new Vector3(Cube[Plot[3]].transform.position.x, Cube[Plot[3]].transform.position.y + .2f ,Cube[Plot[3]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		g3.transform.LookAt( Camera.main.transform.position );
+		g3.transform.parent = Cube[Plot[3]].transform;
+		g3.transform.name = "Sprite4"; 
+		GameObject l3 = Instantiate( Label,  new Vector3(Cube[Plot[3]].transform.position.x, Cube[Plot[3]].transform.position.y + .2f ,Cube[Plot[3]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		l3.transform.LookAt( -Camera.main.transform.position );
+		l3.transform.parent = Cube[Plot[3]].transform;
+		l3.transform.name = "Label4";
+		//int b3 = Random.Range( 0, 4 );
+		l3.GetComponent<UILabel>().text = Topics[Plot[3]];
 		LineIndex1++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2426,6 +2532,16 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[4] ]);
+		GameObject g4 = Instantiate( Popup,  new Vector3(Cube[Plot[4]].transform.position.x, Cube[Plot[4]].transform.position.y + .2f ,Cube[Plot[4]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		g4.transform.LookAt( Camera.main.transform.position );
+		g4.transform.parent = Cube[Plot[4]].transform;
+		g4.transform.name = "Sprite5"; 
+		GameObject l4 = Instantiate( Label,  new Vector3(Cube[Plot[4]].transform.position.x, Cube[Plot[4]].transform.position.y + .2f ,Cube[Plot[4]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		l4.transform.LookAt( -Camera.main.transform.position );
+		l4.transform.parent = Cube[Plot[4]].transform;
+		l4.transform.name = "Label5";
+		//int b4 = Random.Range( 0, 4 );
+		l4.GetComponent<UILabel>().text = Topics[Plot[4]];
 		LineIndex1++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2433,6 +2549,16 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[5] ]);
+		GameObject g5 = Instantiate( Popup, new Vector3(Cube[Plot[5]].transform.position.x, Cube[Plot[5]].transform.position.y + .2f ,Cube[Plot[5]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		g5.transform.LookAt( Camera.main.transform.position );
+		g5.transform.parent = Cube[Plot[5]].transform;
+		g5.transform.name = "Sprite6"; 
+		GameObject l5 = Instantiate( Label,  new Vector3(Cube[Plot[5]].transform.position.x, Cube[Plot[5]].transform.position.y + .2f ,Cube[Plot[5]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		l5.transform.LookAt( -Camera.main.transform.position );
+		l5.transform.parent = Cube[Plot[5]].transform;
+		l5.transform.name = "Label6";
+		//int b5 = Random.Range( 0, 4 );
+		l5.GetComponent<UILabel>().text = Topics[Plot[5]];
 		LineIndex1++;
 		
 //		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2510,6 +2636,22 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		
 //		
 //	}
+	
+	public static void ClearAllPopups()
+	{
+		Destroy( GameObject.Find( "Sprite1" ) );
+		Destroy( GameObject.Find( "Sprite2" ) );
+		Destroy( GameObject.Find( "Sprite3" ) );
+		Destroy( GameObject.Find( "Sprite4" ) );
+		Destroy( GameObject.Find( "Sprite5" ) );
+		Destroy( GameObject.Find( "Sprite6" ) );
+		Destroy( GameObject.Find( "Label1" ) );
+		Destroy( GameObject.Find( "Label2" ) );
+		Destroy( GameObject.Find( "Label3" ) );
+		Destroy( GameObject.Find( "Label4" ) );
+		Destroy( GameObject.Find( "Label5" ) );
+		Destroy( GameObject.Find( "Label6" ) );
+	}
 	
 	void SavePointToOtherOne1( int TargetIndex )
 	{
@@ -2639,5 +2781,17 @@ public class ArrangeAlongSphere : MonoBehaviour {
 			Result[i] = CubeNo[i+1];
 		}
 		return Result;
+	}
+	
+	private void FreezeRotationOfPopups()
+	{
+		for( int i = 0; i < 6; i++ )
+		{
+			if( GameObject.Find( "Sprite" + (i + 1).ToString() ) )
+			{
+				GameObject.Find( "Sprite" + (i + 1).ToString() ).transform.LookAt( Camera.main.transform.position );
+				GameObject.Find( "Label" + (i + 1).ToString() ).transform.LookAt( -Camera.main.transform.position );
+			}
+		}
 	}
 }
