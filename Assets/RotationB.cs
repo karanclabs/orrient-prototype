@@ -8,7 +8,7 @@ public class RotationB : MonoBehaviour {
 	public static string CubeName = "";
 	public static bool Draw = false;
 	private bool  ZoomFx = false;
-	private static bool Rotate = false;
+	public  static bool Rotate = false;
 	private GameObject[] Cube;
 	private GameObject TargetCube;
 	public static Vector3 TargetIndex;
@@ -18,6 +18,7 @@ public class RotationB : MonoBehaviour {
 	static float angle;
 	static float mAngle = 0;
 	float tAngle = 0;
+	
 	// Use this for initialization
 	void Start () 
 	{
@@ -60,6 +61,7 @@ public class RotationB : MonoBehaviour {
 				fov = camera1.fieldOfView;
 				ObjectIndex = 51 - GetIndexOfTarget( Hit.transform.name );
 				TargetIndex = ArrangeAlongSphere.GetCubePosition( ObjectIndex );
+				print ( "Targetttt: " + TargetIndex);
 				float Angle = Vector3.Angle( camera1.gameObject.transform.position, Hit.transform.position ); 
 				Debug.Log( "Angle: " + Angle );
 					
@@ -68,22 +70,33 @@ public class RotationB : MonoBehaviour {
 		}
 		if( Rotate )
 		{
-			angle = Mathf.Rad2Deg * Mathf.Acos ( Vector3.Dot( GameObject.Find( "CameraPos" ).transform.position, /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]*/ TargetIndex )/ ( Vector3.Magnitude( camera1.gameObject.transform.position ) * Vector3.Magnitude( /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex)));
-			Debug.Log( "TargetIndex: " + TargetIndex + " Orignal: " +  ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]  );
-			Vector3 Axis = Vector3.Cross( GameObject.Find( "CameraPos" ).transform.position,/*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex /*CentreViewPortToWorldVector()*/ );
-			Debug.Log( "Axis: " + Axis + " angle: " + angle );
+//			double s = Mathf.Atan2( TargetIndex.z - 0, TargetIndex.x - 0 ) * Mathf.Rad2Deg;
+//			double s2 = Mathf.Atan( (TargetIndex.y - 0)/( TargetIndex.x - 0) ) * Mathf.Rad2Deg;
+//			double s3 = Mathf.Atan2( TargetIndex.z - 0, TargetIndex.y - 0 ) * Mathf.Rad2Deg;
+			//Debug.Log( "S " + s + " " + Cub.y + " s2 " + (s2).ToString() );
+		
+			//s2 = 0;
+			//GameObject.Find("THE_FINAL_BALL").transform.Rotate( new Vector3( 0,(float)s ,-(float)s2), Space.World );
+		//	angle = Mathf.Rad2Deg * Mathf.Acos ( Vector3.Dot( GameObject.Find( "CameraPos" ).transform.position, /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]*/ TargetIndex )/ ( Vector3.Magnitude( camera1.gameObject.transform.position ) * Vector3.Magnitude( /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex)));
+		//	Debug.Log( "TargetIndex: " + TargetIndex + " Orignal: " +  ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]  );
+		//	Vector3 Axis = Vector3.Cross( GameObject.Find( "CameraPos" ).transform.position,/*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex /*CentreViewPortToWorldVector()*/ );
+			//Debug.Log( "Axis: " + Axis + " angle: " + angle );
+			//Quaternion CenterRotation = GameObject.Find( "CameraPos" ).transform.rotation;
+			
+			//Debug.Log( "Center: " + CenterRotation + " Target: " + TargetIndex );
 			//GameObject.Find( "THE_FINAL_BALL" ).transform.position = Vector3.Slerp( transform)
 			//ApplyRotation( Axis, angle );
 			
 			 //tAngle = Mathf.Lerp( 0, angle, Time.deltaTime*10); 
 			//float diff = angle - tAngle;
-			tAngle += Time.deltaTime * 100;
+			//tAngle += Time.deltaTime * 100;
 		//	if( tAngle > angle )
-			GameObject.Find( "THE_FINAL_BALL" ).transform.RotateAround( Vector3.zero, Axis, -Time.deltaTime * 100 );//*/rotation =  Quaternion.AngleAxis( tAngle, Axis ); //Quaternion.FromToRotation( camera1.gameObject.transform.position, TargetIndex);
+			//GameObject.Find( "THE_FINAL_BALL" ).transform.rotation = TargetIndex; //=  new Quaternion( CenterRotation.x - TargetIndex.x, CenterRotation.y - TargetIndex.y, CenterRotation.z - TargetIndex.z ,1 ) ;
+			//Rotate = false;//.RotateAround( Vector3.zero, Axis, -Time.deltaTime * 100 );//*/rotation =  Quaternion.AngleAxis( tAngle, Axis ); //Quaternion.FromToRotation( camera1.gameObject.transform.position, TargetIndex);
 			//Debug.Log( GameObject.Find( "THE_FINAL_BALL" ).transform.rotation );
 			if( tAngle >= angle )
 			{
-				Rotate = false;
+				//Rotate = false;
 				tAngle = 0;
 			}
 			//if( GameObject.Find( "THE_FINAL_BALL" ).transform.rotation == TargetRotation ) 
@@ -111,6 +124,7 @@ public class RotationB : MonoBehaviour {
 	{
 		objectName = objectName.Replace( "Cube", "" );
 		objectName = objectName.Trim();
+		Debug.Log( "Object Name " + objectName);
 		return int.Parse( objectName ); 
 	}
 	

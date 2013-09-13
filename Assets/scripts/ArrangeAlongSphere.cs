@@ -21,6 +21,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	int VertexCount;
 	Collider[] TargetCube;
 	public Material Matt;
+	public static float[] mAngle = new float[51];
 	public GameObject empty;
 	public static Quaternion RotationValue;
 	public GameObject Popup, Label;
@@ -86,7 +87,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
         var points = UniformPointsOnSphere(count, size);
         for(var i=0; i<count; i++) {
             var g = Instantiate(prefab, transform.position+points[i], Quaternion.identity) as GameObject;
-			
+			g.transform.LookAt( Vector3.zero );
             g.transform.parent = transform;
 			//g.GetComponentInChildren<UISprite>().gameObject.SetActive(false);
 			g.transform.name = "Cube"+(i+1).ToString();
@@ -100,7 +101,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
         var points = new List<Vector3>();
         var i = Mathf.PI * (3 - Mathf.Sqrt(5));
         var o = 2 / N;
-        for(var k=0; k<N/2; k++) {
+        for(var k=0; k<N; k++) {
 //			if( k % 2 == 0 ) Radius = 1;
 //			else Radius = 1.1f;
             var y = k * o - 1 + (o / 2);
@@ -115,25 +116,27 @@ public class ArrangeAlongSphere : MonoBehaviour {
 			//Debug.Log( "y: " + y );
 //			LinRen.SetVertexCount( CubeNo + 1 );
 //			LinRen.SetPosition( CubeNo, new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale );
+			Debug.Log( "AnglePhi: " + phi%360 + " " + phi );
+			//mAngle[ k+1 ] = phi;
             points.Add(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
         }
-		 for(var k=N/2; k<N; k++) {
-//			if( k % 2 == 0 ) Radius = 1;
-//			else Radius = 1.1f;
-            var y = k * o - 1 + (o / 2);
-            var r = Mathf.Sqrt( 1 - y*y);
-            var phi = k * i;
-			//Debug.Log(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
-//			if( CubeNo <= 100 && System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" )) == "" )
-//			{
-//				CubeNo ++;
-//				SavePointToFile( new Vector3(Mathf.Cos(phi)*r, y , Mathf.Sin(phi)*r) * scale );
-//			}
-			//Debug.Log( "y: " + y );
-//			LinRen.SetVertexCount( CubeNo + 1 );
-//			LinRen.SetPosition( CubeNo, new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale );
-            points.Add(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
-        }
+//		 for(var k=N/2; k<N; k++) {
+////			if( k % 2 == 0 ) Radius = 1;
+////			else Radius = 1.1f;
+//            var y = k * o - 1 + (o / 2);
+//            var r = Mathf.Sqrt( 1 - y*y);
+//            var phi = k * i;
+//			//Debug.Log(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
+////			if( CubeNo <= 100 && System.Text.Encoding.UTF8.GetString( System.IO.File.ReadAllBytes( GetDocumentsDirectoryPath() + "/CubePoints.xls" )) == "" )
+////			{
+////				CubeNo ++;
+////				SavePointToFile( new Vector3(Mathf.Cos(phi)*r, y , Mathf.Sin(phi)*r) * scale );
+////			}
+//			//Debug.Log( "y: " + y );
+////			LinRen.SetVertexCount( CubeNo + 1 );
+////			LinRen.SetPosition( CubeNo, new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale );
+//            points.Add(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
+//        }
         return points.ToArray();
     }
 	
@@ -145,6 +148,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		}
 		
 		QualitySettings.antiAliasing = 8;
+		
 		var Path = Application.dataPath.Substring ( 0, Application.dataPath.Length - 5 );
 		Path = Path.Substring( 0, Path.LastIndexOf( '/') );
 		Path = Path + "/Documents";
@@ -182,6 +186,10 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		print ("er");
 		//LinRen = GameObject.Find( "Line" ).GetComponent<LineRenderer>();
 		 Create();
+//		double s = Mathf.Atan2( 1.2f, -1.3f ) * Mathf.Rad2Deg;
+//		Debug.Log( "S " + s );
+//		
+//		GameObject.Find("THE_FINAL_BALL").transform.Rotate( new Vector3( 0f,(float)s ,0f),Space.World );//GameObject.Find("THE_FINAL_BALL").transform.rotation = new Quaternion(0,(float) s,0 ,1f);
 		Cube = new GameObject[ GameObject.Find( "THE_FINAL_BALL" ).GetComponentsInChildren<MeshRenderer>().Length ];
 		CubeInitialPositions = new Vector3[ Cube.Length ];
 		Debug.Log( Cube.Length );
@@ -2247,15 +2255,41 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	{
 		Vector3 Position = Cube[Index].transform.position;
 		return Position;
+			
+//			Quaternion Rotation = new Quaternion(0,0,0,0) ;
+//			Debug.Log ("qqqq"+Cube[Index].transform.rotation);
+//			Rotation = new Quaternion(-Cube[Index].transform.rotation.x,-Cube[Index].transform.rotation.y,-Cube[Index].transform.rotation.z,1);
+//			return Rotation;
+	}
+	
+	void OnGUI()
+	{
+		//Debug.Log( "Rotation: "  + GameObject.Find("THE_FINAL_BALL").transform.rotation + " Object Index: " + RotationB.ObjectIndex );
+		if( RotationB.Rotate  || GUI.Button( new Rect( 0,0,100, 100), "Rotate" ))
+		{
+			RotationB.Rotate = false;
+			Debug.Log( "Rotate Karrrrrrrrrrrrrrr!!!!!!!!!!!!!!!!!!!!!@#@#$@#$@$" );
+			Vector3 Cub = Cube[ RotationB.ObjectIndex ].transform.position;
+			double s = Mathf.Atan2( Cub.z - 0, Cub.x - 0 ) * Mathf.Rad2Deg;
+			double s2 = Mathf.Atan( (Cub.y - 0)/( Cub.x - 0) ) * Mathf.Rad2Deg;
+			double s3 = Mathf.Atan2( Cub.z - 0, Cub.y - 0 ) * Mathf.Rad2Deg;
+			Debug.Log( "S " + s + " " + Cub.y + " s2 " + (s2).ToString() );
+		
+			//s2 = 0;
+			GameObject.Find("THE_FINAL_BALL").transform.Rotate( new Vector3( 0,(float)s ,-(float)s2), Space.World );
+			
+		}
 	}
 	void Update()
 	{
 		
+		Debug.Log( "Rotate Bool: " + RotationB.Rotate );
 		if( RotationB.Draw )
 		{
 			GameObject.Find( "Line1" ).transform.parent = GameObject.Find( "THE_FINAL_BALL" ).transform;
 			for( int i = 1; i <= 50; i++ )
 			{
+				//Debug.Log( "NAme: " + Cube[i].transform.name );
 				if( Cube[i].transform.name == RotationB.CubeName )
 				{
 //					for( int j = 1; j < 51; j++ )
