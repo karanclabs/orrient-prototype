@@ -90,7 +90,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
             g.transform.parent = transform;
 			//g.GetComponentInChildren<UISprite>().gameObject.SetActive(false);
 			g.transform.name = "Cube"+(i+1).ToString();
-			g.GetComponentInChildren<TextMesh>().text = (i+1).ToString();
+			//g.GetComponentInChildren<TextMesh>().text = (i+1).ToString();
 			
 			
         }

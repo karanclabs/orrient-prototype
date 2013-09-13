@@ -68,9 +68,9 @@ public class RotationB : MonoBehaviour {
 		}
 		if( Rotate )
 		{
-			angle = Mathf.Rad2Deg * Mathf.Acos ( Vector3.Dot( camera1.gameObject.transform.position, /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]*/ TargetIndex )/ ( Vector3.Magnitude( camera1.gameObject.transform.position ) * Vector3.Magnitude( /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex)));
+			angle = Mathf.Rad2Deg * Mathf.Acos ( Vector3.Dot( GameObject.Find( "CameraPos" ).transform.position, /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]*/ TargetIndex )/ ( Vector3.Magnitude( camera1.gameObject.transform.position ) * Vector3.Magnitude( /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex)));
 			Debug.Log( "TargetIndex: " + TargetIndex + " Orignal: " +  ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]  );
-			Vector3 Axis = Vector3.Cross( /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex,  camera1.transform.position/*CentreViewPortToWorldVector()*/ );
+			Vector3 Axis = Vector3.Cross( GameObject.Find( "CameraPos" ).transform.position,/*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex /*CentreViewPortToWorldVector()*/ );
 			Debug.Log( "Axis: " + Axis + " angle: " + angle );
 			//GameObject.Find( "THE_FINAL_BALL" ).transform.position = Vector3.Slerp( transform)
 			//ApplyRotation( Axis, angle );
@@ -79,7 +79,7 @@ public class RotationB : MonoBehaviour {
 			//float diff = angle - tAngle;
 			tAngle += Time.deltaTime * 100;
 		//	if( tAngle > angle )
-			GameObject.Find( "THE_FINAL_BALL" ).transform.RotateAround( Vector3.zero, Axis, Time.deltaTime * 100 );//*/rotation =  Quaternion.AngleAxis( tAngle, Axis ); //Quaternion.FromToRotation( camera1.gameObject.transform.position, TargetIndex);
+			GameObject.Find( "THE_FINAL_BALL" ).transform.RotateAround( Vector3.zero, Axis, -Time.deltaTime * 100 );//*/rotation =  Quaternion.AngleAxis( tAngle, Axis ); //Quaternion.FromToRotation( camera1.gameObject.transform.position, TargetIndex);
 			//Debug.Log( GameObject.Find( "THE_FINAL_BALL" ).transform.rotation );
 			if( tAngle >= angle )
 			{
@@ -92,10 +92,10 @@ public class RotationB : MonoBehaviour {
 	//	mAngle = Mathf.Lerp( 0, angle, Time.deltaTime*10 );
 		if( ZoomFx )
 		{
-			fov = Mathf.Lerp( fov, 27, Time.deltaTime * 10 );
+			fov = Mathf.Lerp( fov, 29, Time.deltaTime * 10 );
 			camera1.fieldOfView = fov;
 			//Debug.Log( "Working" );
-			if( camera1.fieldOfView <= 28 ) ZoomFx = false;
+			if( camera1.fieldOfView <= 30 ) ZoomFx = false;
 		}
 		
 		
