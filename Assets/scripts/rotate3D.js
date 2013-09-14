@@ -20,10 +20,11 @@ function Update () {
 			
 			var    angleX = previousPosition.y - newPosition.y; 
 			var    angleY = previousPosition.x - newPosition.x; 
+			var    angleZ = previousPosition.y - newPosition.y; 
 			//	print(angleX);	
 			
 			if(rotate) {
-				transform.Rotate(  Vector3( -angleX*0.2,angleY *0.2 ,0),Space.World );
+				transform.Rotate(  Vector3( 0,angleY *0.2 ,-angleZ*0.2),Space.World );
 			}
 			previousPosition = newPosition;
 			rotate =true;

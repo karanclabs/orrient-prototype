@@ -18,7 +18,8 @@ public class RotationB : MonoBehaviour {
 	static float angle;
 	static float mAngle = 0;
 	float tAngle = 0;
-	
+	public static bool RotationFinished;
+	public static Vector3 ResetVector;
 	// Use this for initialization
 	void Start () 
 	{
@@ -26,7 +27,7 @@ public class RotationB : MonoBehaviour {
 		
 		camera1 = GameObject.Find( "Main Camera" ).GetComponent<Camera>();
 		fov = camera1.fieldOfView;
-		
+		ResetVector = GameObject.Find( "THE_FINAL_BALL" ).transform.position;
 //		for( int i = 1; i < 51; i++ )
 //		{
 //			Cube[i] = GameObject.Find( "THE_FINAL_BALL" ).GetComponentsInChildren<MeshFilter>()[i].gameObject;
@@ -74,13 +75,13 @@ public class RotationB : MonoBehaviour {
 //			double s2 = Mathf.Atan( (TargetIndex.y - 0)/( TargetIndex.x - 0) ) * Mathf.Rad2Deg;
 //			double s3 = Mathf.Atan2( TargetIndex.z - 0, TargetIndex.y - 0 ) * Mathf.Rad2Deg;
 			//Debug.Log( "S " + s + " " + Cub.y + " s2 " + (s2).ToString() );
-		
+			Debug.Log("Targetaaaaa: " + TargetIndex);
 			//s2 = 0;
 			//GameObject.Find("THE_FINAL_BALL").transform.Rotate( new Vector3( 0,(float)s ,-(float)s2), Space.World );
 			angle = Mathf.Rad2Deg * Mathf.Acos ( Vector3.Dot( camera1.transform.position, /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]*/ TargetIndex )/ ( Vector3.Magnitude( camera1.gameObject.transform.position ) * Vector3.Magnitude( /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex)));
 		//	Debug.Log( "TargetIndex: " + TargetIndex + " Orignal: " +  ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]  );
 			Vector3 Axis = Vector3.Cross( camera1.transform.position,/*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex /*CentreViewPortToWorldVector()*/ );
-			//Debug.Log( "Axis: " + Axis + " angle: " + angle );
+			Debug.Log( "Axis: " + Axis + " angle: " + angle + "Tangle " + tAngle);
 			//Quaternion CenterRotation = GameObject.Find( "CameraPos" ).transform.rotation;
 			
 			//Debug.Log( "Center: " + CenterRotation + " Target: " + TargetIndex );
@@ -98,6 +99,7 @@ public class RotationB : MonoBehaviour {
 			{
 				Rotate = false;
 				tAngle = 0;
+				RotationFinished = true;
 			}
 			//if( GameObject.Find( "THE_FINAL_BALL" ).transform.rotation == TargetRotation ) 
 			//Rotate = false;

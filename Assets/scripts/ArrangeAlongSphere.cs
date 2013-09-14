@@ -25,6 +25,7 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	public GameObject empty;
 	public static Quaternion RotationValue;
 	public GameObject Popup, Label;
+	public static int CubeIndexTapped = 0;
 	private string[] Names = new string[]{ "Samar", "Sanjay", "Tanuj", "Ankush", "Tanuj"};
 	private string[] Topics = new string[ 51 ]{ "",
 												"Movies",
@@ -2262,26 +2263,34 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //			return Rotation;
 	}
 	
-	void OnGUI()
+	void OnGUI1()
 	{
 		//Debug.Log( "Rotation: "  + GameObject.Find("THE_FINAL_BALL").transform.rotation + " Object Index: " + RotationB.ObjectIndex );
 		if(  GUI.Button( new Rect( 0,0,100, 100), "Rotate" ))
 		{
+			RotationB.TargetIndex = RotationB.ResetVector;
+			RotationB.Rotate = true;
 			//RotationB.Rotate = false;
-			Debug.Log( "Rotate Karrrrrrrrrrrrrrr!!!!!!!!!!!!!!!!!!!!!@#@#$@#$@$" );
-			Vector3 Cub = Cube[ RotationB.ObjectIndex ].transform.position;
-			double s = Mathf.Atan2( Cub.z - 0, Cub.x - 0 ) * Mathf.Rad2Deg;
-			double s2 = Mathf.Atan( (Cub.y - 0)/( Cub.x - 0) ) * Mathf.Rad2Deg;
-			double s3 = Mathf.Atan2( Cub.z - 0, Cub.y - 0 ) * Mathf.Rad2Deg;
-			Debug.Log( "S " + s + " " + Cub.y + " s2 " + (s2).ToString() );
-		
-			//s2 = 0;
-			GameObject.Find("THE_FINAL_BALL").transform.Rotate( new Vector3( 0,(float)s ,-(float)s2), Space.World );
+//			Debug.Log( "Rotate Karrrrrrrrrrrrrrr!!!!!!!!!!!!!!!!!!!!!@#@#$@#$@$" );
+//			Vector3 Cub = Cube[ RotationB.ObjectIndex ].transform.position;
+//			double s = Mathf.Atan2( Cub.z - 0, Cub.x - 0 ) * Mathf.Rad2Deg;
+//			double s2 = Mathf.Atan( (Cub.y - 0)/( Cub.x - 0) ) * Mathf.Rad2Deg;
+//			double s3 = Mathf.Atan2( Cub.z - 0, Cub.y - 0 ) * Mathf.Rad2Deg;
+//			Debug.Log( "S " + s + " " + Cub.y + " s2 " + (s2).ToString() );
+//		
+//			//s2 = 0;
+//			GameObject.Find("THE_FINAL_BALL").transform.Rotate( new Vector3( 0,(float)s ,-(float)s2), Space.World );
 			
 		}
 	}
 	void Update()
 	{
+		if( Bridge.ZoomOut )
+		{
+			ClearAllLineRenderers();
+			ClearAllPopups();
+			Bridge.ZoomOut = false;
+		}
 		
 		Debug.Log( "Rotate Bool: " + RotationB.Rotate );
 		if( RotationB.Draw )
@@ -2299,7 +2308,8 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //						}
 					int[] Points = new int[6];
 					Points = NearestPoints( i );
-					DrawLinesOnClick( i, Points);
+					CubeIndexTapped = i;
+					//DrawLinesOnClick( i, Points);
 					break;
 				}
 			}
@@ -2317,6 +2327,13 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //			//Debug.Log( "LineDrawn" );
 //		}
 		//Debug.Log( Cube[10].transform.position + " " + Cube[10].transform.localPosition);
+		if( RotationB.RotationFinished && CubeIndexTapped != 0 )
+		{
+			int[] Points = new int[6];
+			Points = NearestPoints( CubeIndexTapped );
+			DrawLinesOnClick( CubeIndexTapped, Points);
+			RotationB.RotationFinished = false;
+		}
 		FreezeRotationOfPopups();
 //		
 		//DrawAlllines( 1 );
@@ -2493,19 +2510,67 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		
 	}
 	
+	private void ClearAllLineRenderers()
+	{
+		
+		int[] Plot = NearestPoints( CubeIndexTapped );
+		//int b = Random.Range( 0, 4 );
+		
+//		l.GetComponent<UILabel>().GetComponent<MeshFilter>().mesh.RecalculateNormals();
+		
+		Debug.Log( "Target Cube " + Cube[CubeIndexTapped].transform.position );
+		LineIndex1 = 2;
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .01f, .01f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[CubeIndexTapped]  );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[1] ] );
+		LineIndex1++;
+		
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .01f, .01f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[CubeIndexTapped] );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[2] ]);
+		LineIndex1++;
+		
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .01f, .01f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[CubeIndexTapped] );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[3] ]);
+		LineIndex1++;
+		
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .01f, .01f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[CubeIndexTapped] );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[4] ]);
+		LineIndex1++;
+		
+		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
+		LinRen.SetWidth( .01f, .01f );
+		LinRen.SetVertexCount( 2 );
+		LinRen.SetPosition( 0, CubeInitialPositions[CubeIndexTapped] );
+		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[5] ]);
+		LineIndex1++;
+	}
+	
 	private void DrawLinesOnClick( int Index, int[] Plot )
 	{
-		GameObject g = Instantiate( Popup,  new Vector3(Cube[Index].transform.position.x, Cube[Index].transform.position.y + .2f ,Cube[Index].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject g = Instantiate( Popup,  new Vector3(Cube[Index].transform.position.x + .2f, Cube[Index].transform.position.y + .2f ,Cube[Index].transform.position.z), Quaternion.identity ) as GameObject;
 		g.transform.LookAt( Camera.main.transform.position );
 		g.transform.parent = Cube[Index].transform;
 		g.transform.name = "Sprite1"; 
 		RotationValue = g.transform.rotation;
-		GameObject l = Instantiate( Label,  new Vector3(Cube[Index].transform.position.x, Cube[Index].transform.position.y + .2f ,Cube[Index].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject l = Instantiate( Label,  new Vector3(Cube[Index].transform.position.x + .2f, Cube[Index].transform.position.y + .2f ,Cube[Index].transform.position.z), Quaternion.identity ) as GameObject;
 		l.transform.LookAt( -Camera.main.transform.position );
 		l.transform.parent = Cube[Index].transform;
 		l.transform.name = "Label1"; 
 		//int b = Random.Range( 0, 4 );
 		l.GetComponent<UILabel>().text = Topics[Index];
+		g.animation.Play();
+		l.animation.Play();
 //		l.GetComponent<UILabel>().GetComponent<MeshFilter>().mesh.RecalculateNormals();
 		
 		Debug.Log( "Target Cube " + Cube[Index].transform.position );
@@ -2515,16 +2580,18 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index]  );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[1] ] );
-		GameObject g1 = Instantiate( Popup,  new Vector3(Cube[Plot[1]].transform.position.x, Cube[Plot[1]].transform.position.y + .2f ,Cube[Plot[1]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject g1 = Instantiate( Popup,  new Vector3(Cube[Plot[1]].transform.position.x + .2f, Cube[Plot[1]].transform.position.y + .2f ,Cube[Plot[1]].transform.position.z ), Quaternion.identity ) as GameObject;
 		g1.transform.LookAt( Camera.main.transform.position );
 		g1.transform.parent = Cube[Plot[1]].transform;
 		g1.transform.name = "Sprite2"; 
-		GameObject l1 = Instantiate( Label,  new Vector3(Cube[Plot[1]].transform.position.x, Cube[Plot[1]].transform.position.y + .2f ,Cube[Plot[1]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject l1 = Instantiate( Label,  new Vector3(Cube[Plot[1]].transform.position.x + .2f, Cube[Plot[1]].transform.position.y + .2f ,Cube[Plot[1]].transform.position.z ), Quaternion.identity ) as GameObject;
 		l1.transform.LookAt( -Camera.main.transform.position );
 		l1.transform.parent = Cube[Plot[1]].transform;
 		l1.transform.name = "Label2";
 		//int b1 = Random.Range( 0, 4 );
 		l1.GetComponent<UILabel>().text = Topics[Plot[1]];
+		g1.animation.Play();
+		l1.animation.Play();
 		LineIndex1++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2532,16 +2599,18 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[2] ]);
-		GameObject g2 = Instantiate( Popup,  new Vector3(Cube[Plot[2]].transform.position.x, Cube[Plot[2]].transform.position.y + .2f ,Cube[Plot[2]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject g2 = Instantiate( Popup,  new Vector3(Cube[Plot[2]].transform.position.x + .2f, Cube[Plot[2]].transform.position.y + .2f ,Cube[Plot[2]].transform.position.z ), Quaternion.identity ) as GameObject;
 		g2.transform.LookAt( Camera.main.transform.position );
 		g2.transform.parent = Cube[Plot[2]].transform;
 		g2.transform.name = "Sprite3"; 
-		GameObject l2 = Instantiate( Label,  new Vector3(Cube[Plot[2]].transform.position.x, Cube[Plot[2]].transform.position.y + .2f ,Cube[Plot[2]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject l2 = Instantiate( Label,  new Vector3(Cube[Plot[2]].transform.position.x + .2f, Cube[Plot[2]].transform.position.y + .2f ,Cube[Plot[2]].transform.position.z ), Quaternion.identity ) as GameObject;
 		l2.transform.LookAt( -Camera.main.transform.position );
 		l2.transform.parent = Cube[Plot[2]].transform;
 		l2.transform.name = "Label3";
 		//int b2 = Random.Range( 0, 4 );
 		l2.GetComponent<UILabel>().text = Topics[Plot[2]];
+		g2.animation.Play();
+		l2.animation.Play();
 		LineIndex1++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2549,16 +2618,18 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[3] ]);
-		GameObject g3 = Instantiate( Popup,  new Vector3(Cube[Plot[3]].transform.position.x, Cube[Plot[3]].transform.position.y + .2f ,Cube[Plot[3]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject g3 = Instantiate( Popup,  new Vector3(Cube[Plot[3]].transform.position.x + .2f, Cube[Plot[3]].transform.position.y + .2f ,Cube[Plot[3]].transform.position.z ), Quaternion.identity ) as GameObject;
 		g3.transform.LookAt( Camera.main.transform.position );
 		g3.transform.parent = Cube[Plot[3]].transform;
 		g3.transform.name = "Sprite4"; 
-		GameObject l3 = Instantiate( Label,  new Vector3(Cube[Plot[3]].transform.position.x, Cube[Plot[3]].transform.position.y + .2f ,Cube[Plot[3]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject l3 = Instantiate( Label,  new Vector3(Cube[Plot[3]].transform.position.x + .2f, Cube[Plot[3]].transform.position.y + .2f ,Cube[Plot[3]].transform.position.z ), Quaternion.identity ) as GameObject;
 		l3.transform.LookAt( -Camera.main.transform.position );
 		l3.transform.parent = Cube[Plot[3]].transform;
 		l3.transform.name = "Label4";
 		//int b3 = Random.Range( 0, 4 );
 		l3.GetComponent<UILabel>().text = Topics[Plot[3]];
+		g3.animation.Play();
+		l3.animation.Play();
 		LineIndex1++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2566,16 +2637,18 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[4] ]);
-		GameObject g4 = Instantiate( Popup,  new Vector3(Cube[Plot[4]].transform.position.x, Cube[Plot[4]].transform.position.y + .2f ,Cube[Plot[4]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject g4 = Instantiate( Popup,  new Vector3(Cube[Plot[4]].transform.position.x + .2f, Cube[Plot[4]].transform.position.y + .2f ,Cube[Plot[4]].transform.position.z ), Quaternion.identity ) as GameObject;
 		g4.transform.LookAt( Camera.main.transform.position );
 		g4.transform.parent = Cube[Plot[4]].transform;
 		g4.transform.name = "Sprite5"; 
-		GameObject l4 = Instantiate( Label,  new Vector3(Cube[Plot[4]].transform.position.x, Cube[Plot[4]].transform.position.y + .2f ,Cube[Plot[4]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject l4 = Instantiate( Label,  new Vector3(Cube[Plot[4]].transform.position.x + .2f, Cube[Plot[4]].transform.position.y + .2f ,Cube[Plot[4]].transform.position.z ), Quaternion.identity ) as GameObject;
 		l4.transform.LookAt( -Camera.main.transform.position );
 		l4.transform.parent = Cube[Plot[4]].transform;
 		l4.transform.name = "Label5";
 		//int b4 = Random.Range( 0, 4 );
 		l4.GetComponent<UILabel>().text = Topics[Plot[4]];
+		g4.animation.Play();
+		l4.animation.Play();
 		LineIndex1++;
 		
 		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2583,16 +2656,18 @@ public class ArrangeAlongSphere : MonoBehaviour {
 		LinRen.SetVertexCount( 2 );
 		LinRen.SetPosition( 0, CubeInitialPositions[Index] );
 		LinRen.SetPosition( 1, CubeInitialPositions[ Plot[5] ]);
-		GameObject g5 = Instantiate( Popup, new Vector3(Cube[Plot[5]].transform.position.x, Cube[Plot[5]].transform.position.y + .2f ,Cube[Plot[5]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject g5 = Instantiate( Popup, new Vector3(Cube[Plot[5]].transform.position.x + .2f, Cube[Plot[5]].transform.position.y + .2f ,Cube[Plot[5]].transform.position.z ), Quaternion.identity ) as GameObject;
 		g5.transform.LookAt( Camera.main.transform.position );
 		g5.transform.parent = Cube[Plot[5]].transform;
 		g5.transform.name = "Sprite6"; 
-		GameObject l5 = Instantiate( Label,  new Vector3(Cube[Plot[5]].transform.position.x, Cube[Plot[5]].transform.position.y + .2f ,Cube[Plot[5]].transform.position.z - .2f), Quaternion.identity ) as GameObject;
+		GameObject l5 = Instantiate( Label,  new Vector3(Cube[Plot[5]].transform.position.x + .2f, Cube[Plot[5]].transform.position.y + .2f ,Cube[Plot[5]].transform.position.z ), Quaternion.identity ) as GameObject;
 		l5.transform.LookAt( -Camera.main.transform.position );
 		l5.transform.parent = Cube[Plot[5]].transform;
 		l5.transform.name = "Label6";
 		//int b5 = Random.Range( 0, 4 );
 		l5.GetComponent<UILabel>().text = Topics[Plot[5]];
+		g5.animation.Play();
+		l5.animation.Play();
 		LineIndex1++;
 		
 //		LinRen = GameObject.Find( "Line" + LineIndex1 ).GetComponent<LineRenderer>();
@@ -2670,6 +2745,11 @@ public class ArrangeAlongSphere : MonoBehaviour {
 //		
 //		
 //	}
+	
+	void SetRelativePositionOfPopup( GameObject Sprite, GameObject Label )
+	{
+		
+	}
 	
 	public static void ClearAllPopups()
 	{

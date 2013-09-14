@@ -1,9 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/ArrangeAlongSphere.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/zoom.js">
     <Files>
-      <File FileName="Assets/scripts/ArrangeAlongSphere.cs" Line="403" Column="43" />
-      <File FileName="Assets/RotationB.cs" Line="90" Column="47" />
+      <File FileName="Assets/scripts/ArrangeAlongSphere.cs" Line="2288" Column="3" />
+      <File FileName="Assets/scripts/rotate3D.js" Line="29" Column="15" />
+      <File FileName="Assets/scripts/zoom.js" Line="52" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

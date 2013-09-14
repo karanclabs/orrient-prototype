@@ -4,7 +4,6 @@ var previousDistance:float =0;
 var camera1:Camera;
 var zoomNow : boolean;
 static var fov1:float;
-
 function Start () {
 	camera1 = this.gameObject.GetComponent(Camera);
 	fov1 =camera1.fieldOfView;
@@ -57,7 +56,7 @@ function Update () {
 
 	if (Input.GetAxis("Mouse ScrollWheel")< 0)
 	{
-		
+		Bridge.ZoomOut = true;
 		fov1 += Time.deltaTime*300;// fov ++;
 		camera1.fieldOfView =fov1;
 	}
