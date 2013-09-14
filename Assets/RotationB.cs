@@ -60,7 +60,7 @@ public class RotationB : MonoBehaviour {
 				ZoomFx = true;
 				fov = camera1.fieldOfView;
 				ObjectIndex = 51 - GetIndexOfTarget( Hit.transform.name );
-				TargetIndex = ArrangeAlongSphere.GetCubePosition( ObjectIndex );
+				//TargetIndex = ArrangeAlongSphere.GetCubePosition( ObjectIndex );
 				print ( "Targetttt: " + TargetIndex);
 				float Angle = Vector3.Angle( camera1.gameObject.transform.position, Hit.transform.position ); 
 				Debug.Log( "Angle: " + Angle );
@@ -77,9 +77,9 @@ public class RotationB : MonoBehaviour {
 		
 			//s2 = 0;
 			//GameObject.Find("THE_FINAL_BALL").transform.Rotate( new Vector3( 0,(float)s ,-(float)s2), Space.World );
-		//	angle = Mathf.Rad2Deg * Mathf.Acos ( Vector3.Dot( GameObject.Find( "CameraPos" ).transform.position, /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]*/ TargetIndex )/ ( Vector3.Magnitude( camera1.gameObject.transform.position ) * Vector3.Magnitude( /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex)));
+			angle = Mathf.Rad2Deg * Mathf.Acos ( Vector3.Dot( camera1.transform.position, /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]*/ TargetIndex )/ ( Vector3.Magnitude( camera1.gameObject.transform.position ) * Vector3.Magnitude( /*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex)));
 		//	Debug.Log( "TargetIndex: " + TargetIndex + " Orignal: " +  ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ]  );
-		//	Vector3 Axis = Vector3.Cross( GameObject.Find( "CameraPos" ).transform.position,/*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex /*CentreViewPortToWorldVector()*/ );
+			Vector3 Axis = Vector3.Cross( camera1.transform.position,/*ArrangeAlongSphere.StaticCuceInitialPositions[ 51 - ObjectIndex ] */TargetIndex /*CentreViewPortToWorldVector()*/ );
 			//Debug.Log( "Axis: " + Axis + " angle: " + angle );
 			//Quaternion CenterRotation = GameObject.Find( "CameraPos" ).transform.rotation;
 			
@@ -89,14 +89,14 @@ public class RotationB : MonoBehaviour {
 			
 			 //tAngle = Mathf.Lerp( 0, angle, Time.deltaTime*10); 
 			//float diff = angle - tAngle;
-			//tAngle += Time.deltaTime * 100;
+			tAngle += Time.deltaTime * 100;
 		//	if( tAngle > angle )
 			//GameObject.Find( "THE_FINAL_BALL" ).transform.rotation = TargetIndex; //=  new Quaternion( CenterRotation.x - TargetIndex.x, CenterRotation.y - TargetIndex.y, CenterRotation.z - TargetIndex.z ,1 ) ;
-			//Rotate = false;//.RotateAround( Vector3.zero, Axis, -Time.deltaTime * 100 );//*/rotation =  Quaternion.AngleAxis( tAngle, Axis ); //Quaternion.FromToRotation( camera1.gameObject.transform.position, TargetIndex);
+			GameObject.Find( "THE_FINAL_BALL" ).transform.RotateAround( Vector3.zero, Axis, -Time.deltaTime * 100 );//*/rotation =  Quaternion.AngleAxis( tAngle, Axis ); //Quaternion.FromToRotation( camera1.gameObject.transform.position, TargetIndex);
 			//Debug.Log( GameObject.Find( "THE_FINAL_BALL" ).transform.rotation );
 			if( tAngle >= angle )
 			{
-				//Rotate = false;
+				Rotate = false;
 				tAngle = 0;
 			}
 			//if( GameObject.Find( "THE_FINAL_BALL" ).transform.rotation == TargetRotation ) 

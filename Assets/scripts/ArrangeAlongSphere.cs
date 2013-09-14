@@ -2265,9 +2265,9 @@ public class ArrangeAlongSphere : MonoBehaviour {
 	void OnGUI()
 	{
 		//Debug.Log( "Rotation: "  + GameObject.Find("THE_FINAL_BALL").transform.rotation + " Object Index: " + RotationB.ObjectIndex );
-		if( RotationB.Rotate  || GUI.Button( new Rect( 0,0,100, 100), "Rotate" ))
+		if(  GUI.Button( new Rect( 0,0,100, 100), "Rotate" ))
 		{
-			RotationB.Rotate = false;
+			//RotationB.Rotate = false;
 			Debug.Log( "Rotate Karrrrrrrrrrrrrrr!!!!!!!!!!!!!!!!!!!!!@#@#$@#$@$" );
 			Vector3 Cub = Cube[ RotationB.ObjectIndex ].transform.position;
 			double s = Mathf.Atan2( Cub.z - 0, Cub.x - 0 ) * Mathf.Rad2Deg;
