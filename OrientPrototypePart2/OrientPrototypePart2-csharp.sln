@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 
 Project("{F7A36E98-CD0A-E72F-5DA8-8C9DB8E2F6D8}") = "OrientPrototypePart2", "Assembly-CSharp-vs.csproj", "{4375782D-A2B7-3AB3-FB0C-4CDE00C4DDA0}"
 EndProject
+Project("{F7A36E98-CD0A-E72F-5DA8-8C9DB8E2F6D8}") = "OrientPrototypePart2", "Assembly-CSharp-Editor-vs.csproj", "{9E0B8ABE-8993-995B-EA8D-507E432AE634}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,11 +15,15 @@ Global
 		{4375782D-A2B7-3AB3-FB0C-4CDE00C4DDA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4375782D-A2B7-3AB3-FB0C-4CDE00C4DDA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4375782D-A2B7-3AB3-FB0C-4CDE00C4DDA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E0B8ABE-8993-995B-EA8D-507E432AE634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E0B8ABE-8993-995B-EA8D-507E432AE634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E0B8ABE-8993-995B-EA8D-507E432AE634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E0B8ABE-8993-995B-EA8D-507E432AE634}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-						GlobalSection(MonoDevelopProperties) = preSolution
+											GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1

@@ -1,11 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Strips.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="../Desktop/Ball Rotation 3D/Assets/RotationB.cs">
     <Files>
       <File FileName="../Documents/Received Files/Fortress/Assets/scripts/PathPoints.cs" Line="216" Column="4" />
-      <File FileName="Assets/Scripts/Strips.cs" Line="53" Column="57" />
-      <File FileName="Assets/Scripts/Circledemo.cs" Line="10" Column="16" />
       <File FileName="../Desktop/Ball Rotation 3D/Assets/scripts/ArrangeAlongSphere.cs" Line="161" Column="79" />
+      <File FileName="../Desktop/Ball Rotation 3D/Assets/RotationB.cs" Line="67" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

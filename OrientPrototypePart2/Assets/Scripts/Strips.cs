@@ -26,6 +26,13 @@ public class Strips : MonoBehaviour {
 	public Material[] Lambert;
 	public GameObject LineCollider;
 	static int LineNo = 0;
+	static float Angle = 0, AngleToMove, AngleCamera, AngleCameraToMove;
+	static Vector3 OnAxis;
+	bool Rotate = false, RotateCamera = false, mRotate = false;
+	static Vector3 AxisH;
+	static float AngleH;
+	static int lineIndex;
+	static Vector3 CameraAxis;
 	// Use this for initialization
 	void Start () 
 	{
@@ -36,21 +43,29 @@ public class Strips : MonoBehaviour {
 		GameObject.Find( "Line" ).transform.parent = transform;
 		CircularLine = GameObject.Find( "Line" ).GetComponent< LineRenderer >();
 		
-		DrawCircleOnAxis( new Vector3( -1,1,0 ), Radius/2, 1,0 );
+		DrawCircleOnAxis( new Vector3( -1,1,0 ), Radius/(2.1f), 1,0 );
+		DrawCircleOnAxis( new Vector3( 1,1,0 ), Radius/(2.08f), 1.5f,2 );
+		DrawCircleOnAxis( new Vector3( 1,1,1 ), Radius/(2.04f), 2,3 );
+		DrawCircleOnAxis( new Vector3( -1,1,-1 ), Radius/(2.05f), 2.5f,4 );
+		DrawCircleOnAxis( new Vector3( 0,1,1 ), Radius/(2.04f), 3,1 );
+		DrawCircleOnAxis( new Vector3( -15,3,10 ), Radius/(2.06f), 2.5f,2 );
+		DrawCircleOnAxis( new Vector3( 1,-1,-1 ), Radius/(2.04f), 2,3 );
+		DrawCircleOnAxis( new Vector3( 0,-1,1 ), Radius/(2.00f), 1.5f,4 );
+		DrawCircleOnAxis( new Vector3( 3,5,-1 ), Radius/(2.02f), 1,1 );
 		//DrawCircleOnAxis( new Vector3( -1,-1,0 ), Radius/2, 2,0 );
-		DrawCircleOnAxis( new Vector3( 4,4,5 ), Radius/2, 2,1 );
-//		DrawCircleOnAxis( new Vector3( -9,-3, 7 ), Radius/2, 2,0 );
-//		DrawCircleOnAxis( new Vector3( 5, -4 , 6 ), Radius/2, 2,0 );
-//		DrawCircleOnAxis( new Vector3( -4,-9, -1), Radius/2, 2,0 );
-		DrawCircleOnAxis( new Vector3( 4, 5,-9 ), Radius/2, 2,2 );
-		DrawCircleOnAxis( new Vector3( 8,-6,12 ), Radius/2, 2,3 );
-		DrawCircleOnAxis( new Vector3( 1,0,0 ), Radius/2, 2,4 );
-	//	DrawCircleOnAxis( new Vector3( 6,1,0 ), Radius/2, 2,0 );
-		DrawCircleOnAxis( new Vector3( 4,2,3 ), Radius/2, 2,5 );
-		DrawCircleOnAxis( new Vector3( 30,12,0 ), Radius/2, 2,6 );
-		DrawCircleOnAxis( new Vector3( 8,1,1 ), Radius/2, 2,7 );
-		DrawCircleOnAxis( new Vector3( 67,51,3 ), Radius/2, 2,8 );
-		DrawCircleOnAxis( new Vector3( 9,4,-2 ), Radius/2, 2,9 );
+//		DrawCircleOnAxis( new Vector3( 4,4,5 ), Radius/1.98f, 2,1 );
+////		DrawCircleOnAxis( new Vector3( -9,-3, 7 ), Radius/2, 2,0 );
+////		DrawCircleOnAxis( new Vector3( 5, -4 , 6 ), Radius/2, 2,0 );
+////		DrawCircleOnAxis( new Vector3( -4,-9, -1), Radius/2, 2,0 );
+//		DrawCircleOnAxis( new Vector3( 4, 5,-9 ), Radius/1.96f, 3,2 );
+//		DrawCircleOnAxis( new Vector3( 8,-6,12 ), Radius/1.94f, 4,3 );
+//		DrawCircleOnAxis( new Vector3( 1,0,0 ), Radius/1.92f, 5,4 );
+//	//	DrawCircleOnAxis( new Vector3( 6,1,0 ), Radius/2, 2,0 );
+//		DrawCircleOnAxis( new Vector3( 4,2,3 ), Radius/1.9f, 1,5 );
+//		DrawCircleOnAxis( new Vector3( 30,12,0 ), Radius/1.88f, 2,6 );
+//		DrawCircleOnAxis( new Vector3( 8,1,1 ), Radius/1.86f, 3,7 );
+//		DrawCircleOnAxis( new Vector3( 67,51,3 ), Radius/1.84f, 4,8 );
+//		DrawCircleOnAxis( new Vector3( 9,4,-2 ), Radius/1.82f, 5,9 );
 //		for( int i = 0; i < 20; i++ )
 //		{
 //			Axis[i] = new Vector3( Random.Range ( (float)-10, (float)10), Random.Range ((float)-10, (float)10), Random.Range ( (float)-10, (float)10 ) );
@@ -89,7 +104,7 @@ public class Strips : MonoBehaviour {
 		
 	}
 	
-	void DrawCircleOnAxis( Vector3 N, float Radius, int Popularity, int MaterialIndex )
+	void DrawCircleOnAxis( Vector3 N, float Radius, float Popularity, int MaterialIndex )
 	{
 
 		N = N / N.magnitude;
@@ -179,13 +194,61 @@ public class Strips : MonoBehaviour {
 			    if( Hit.transform.name != "Sphere") 
 				{
 					Debug.Log( Hit.point + " " + Hit.transform.parent.name );
-					Vector3 Axis = CalculateAxis( Hit.transform.name , GetLineIndex( Hit.transform.parent.name ) );
-					float Angle = CalculateAngleBetweenLineAndX( Axis );
+				    AxisH = CalculateAxis( Hit.transform.name , GetLineIndex( Hit.transform.parent.name ) );
+					lineIndex = GetLineIndex( Hit.transform.parent.name );
+					AngleH = CalculateAngleBetweenLineAndX( AxisH );
+					AngleCameraToMove = CalculateAngleCamera( AxisH );
 					Debug.Log( "Update Vala Angle " + Angle );
-					RotateCircleToHorizontal( Angle );	
+					//RotateCircleToHorizontal( Angle );
+					RotateTowardsCamera( Hit.transform.position );
+					Rotate = true;
+					
 				}
 			}
-		}	
+		}
+		
+		if( Rotate )
+		{
+			
+			Angle += Time.deltaTime * 1;
+			GameObject.Find( "Sphere" ).transform.RotateAround( OnAxis, Time.deltaTime * 1 );
+			//GameObject.Find( "Sphere" ).transform.RotateAround( AxisH, -Time.deltaTime * 1 );
+			//Debug.Log( " Angle to move " + AngleToMove + " Angle " + Angle );
+			if( Angle >= AngleToMove )
+			{
+				Rotate = false;
+				Angle = 0;
+				Camera.main.animation.Play();
+				RotateCamera = true;
+			}
+		}
+		
+		if( RotateCamera )
+		{
+			AngleCameraToMove = Vector3.Angle ( new Vector3 ( 0,1,0), OnAxis ) * Mathf.Deg2Rad;
+			RotateCamera = false;
+			mRotate = true;
+//			AngleCamera += Time.deltaTime * 2;
+//			GameObject.Find( "Sphere" ).transform.RotateAround( new Vector3( 0,0,1), -Time.deltaTime * 2 );
+//			Debug.Log( "To Move " + AngleCameraToMove + " Moved " + AngleCamera );
+//			if( AngleCamera >= AngleCameraToMove )
+//			{
+//				RotateCamera = false;
+//				AngleCamera = 0;
+//			}
+			
+		}
+		if( mRotate )
+		{
+			AngleCamera += Time.deltaTime * 2;
+			GameObject.Find( "Sphere" ).transform.RotateAround( new Vector3( 0,0,1), -Time.deltaTime * 2 );
+			Debug.Log( "To Move " + AngleCameraToMove + " Moved " + AngleCamera );
+			if( AngleCamera >= AngleCameraToMove )
+			{
+				mRotate = false;
+				AngleCamera = 0;
+			}
+		}
 	}
 	
 	float CalculateAngleBetweenLineAndX( Vector3 Axis )
@@ -193,7 +256,7 @@ public class Strips : MonoBehaviour {
 	//	int Index = GetLineIndex( LineName );
 		float Angle = Vector3.Angle( Axis, new Vector3( 1, 0, 0 ) );
 		Debug.Log( Angle );
-		return -Angle;
+		return Angle;
 	}
 	
 	int GetLineIndex( string LineName )
@@ -209,9 +272,14 @@ public class Strips : MonoBehaviour {
 	Vector3 CalculateAxis( string HitPosition, int Index )
 	{
 		Vector3 HitPoint = GameObject.Find( "Line" + Index + "/" + HitPosition ).transform.position;
-		int ColliderIndex = int.Parse( HitPosition.Substring( 8, 2 ).Trim() );
+		Debug.Log( HitPosition );
+		int ColliderIndex;
+	   	if( HitPosition.Length == 10 ) ColliderIndex = int.Parse( HitPosition.Substring( 8, 2 ).Trim() );
+		else ColliderIndex = int.Parse( HitPosition.Substring( 8, 1 ).Trim() );
 		Debug.Log( "ColliderNo " + ColliderIndex );
-		Vector3 Perp = GameObject.Find( "Line" + Index + "/Collider" + ( ColliderIndex+25 ).ToString() ).transform.position;
+		Vector3 Perp;
+		if( ColliderIndex < 75) Perp = GameObject.Find( "Line" + Index + "/Collider" + ( ColliderIndex+25 ).ToString() ).transform.position;
+		else Perp = GameObject.Find( "Line" + Index + "/Collider" + ( 25 - ( 100 - ColliderIndex ) ).ToString() ).transform.position;
 		Vector3 U = HitPoint - Vector3.zero;
 		Vector3 V = Perp - Vector3.zero;
 		Debug.Log( "UV Angle " + Vector3.Angle( U, V ));
@@ -219,4 +287,19 @@ public class Strips : MonoBehaviour {
 		Debug.Log("Axis: " + Axis + " Angle Bw UV " + Vector3.Angle( Axis, U ) );
 		return Axis;
 	}
+	
+	void RotateTowardsCamera( Vector3 HitPoint )
+	{
+		 AngleToMove = Vector3.Angle( HitPoint, Camera.main.transform.position ) * Mathf.Deg2Rad;
+		 OnAxis = Vector3.Cross( HitPoint, Camera.main.transform.position );
+		
+		//GameObject.Find( "Sphere" ).transform.RotateAround( OnAxis, 360 - AngleToMove );
+	}
+	
+	float CalculateAngleCamera( Vector3 Axis )
+	{
+		return ( Vector3.Angle( Camera.main.transform.up, Axis )) * Mathf.Deg2Rad;		
+	}
+	
+	
 }
