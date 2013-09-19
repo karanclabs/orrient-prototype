@@ -20,6 +20,7 @@ public class TypewriterEffect : MonoBehaviour
 		if (mLabel == null)
 		{
 			mLabel = GetComponent<UILabel>();
+			//TweenAlpha.Begin( this.gameObject, 0, 0 );
 			mLabel.supportEncoding = false;
 			mLabel.symbolStyle = UIFont.SymbolStyle.None;
 			mText = mLabel.font.WrapText(mLabel.text, mLabel.lineWidth / mLabel.cachedTransform.localScale.x, mLabel.maxLineCount, false, UIFont.SymbolStyle.None);

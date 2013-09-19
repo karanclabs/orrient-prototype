@@ -3,6 +3,7 @@
 var previousDistance:float =0;
 var camera1:Camera;
 var zoomNow : boolean;
+var TextToDisplay:GameObject;
 static var fov1:float;
 function Start () {
 	camera1 = this.gameObject.GetComponent(Camera);
@@ -57,10 +58,14 @@ function Update () {
 	if (Input.GetAxis("Mouse ScrollWheel")< 0)
 	{
 		//Bridge.ZoomOut = true;
+		//TextToDisplay.SetActive( false );
+		Debug.Log( "ZZZZZZZZZZZ" );
+		if( Bridge.ShowText ) fov1 =camera1.fieldOfView;
+		Bridge.ShowText = false;
 		fov1 += Time.deltaTime*300;// fov ++;
 		camera1.fieldOfView =fov1;
 	}
-	if(fov1<5) fov1=5;
+	if(fov1<1) fov1=1;
 	if(fov1>60) fov1 =60;
 
 //	camera1.fieldOfView = Input.GetAxis("Mouse ScrollWheel");    

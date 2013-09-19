@@ -1,10 +1,16 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="../Desktop/Ball Rotation 3D/Assets/RotationB.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Strips.cs">
     <Files>
       <File FileName="../Documents/Received Files/Fortress/Assets/scripts/PathPoints.cs" Line="216" Column="4" />
       <File FileName="../Desktop/Ball Rotation 3D/Assets/scripts/ArrangeAlongSphere.cs" Line="161" Column="79" />
-      <File FileName="../Desktop/Ball Rotation 3D/Assets/RotationB.cs" Line="67" Column="5" />
+      <File FileName="../Desktop/Ball Rotation 3D/Assets/RotationB.cs" Line="81" Column="38" />
+      <File FileName="Assets/Scripts/Strips.cs" Line="265" Column="48" />
+      <File FileName="Assets/NGUI/Examples/Scripts/Other/TypewriterEffect.cs" Line="23" Column="4" />
+      <File FileName="Assets/NGUI/Scripts/Editor/UIWidgetInspector.cs" Line="1002" Column="77" />
+      <File FileName="Assets/Scripts/zoom.js" Line="63" Column="27" />
+      <File FileName="Assets/Standard Assets/Bridge.cs" Line="5" Column="2" />
+      <File FileName="Assets/Scripts/FadeInEffect.cs" Line="19" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -33,6 +33,9 @@ public class Strips : MonoBehaviour {
 	static float AngleH;
 	static int lineIndex;
 	static Vector3 CameraAxis;
+	static string HitPosition;
+	public GameObject Questionl1, Questionl2, Answerl1, Answerl2, Answerl3;
+	static string HitLine;
 	// Use this for initialization
 	void Start () 
 	{
@@ -42,16 +45,20 @@ public class Strips : MonoBehaviour {
 		float yCoord = Radius;
 		GameObject.Find( "Line" ).transform.parent = transform;
 		CircularLine = GameObject.Find( "Line" ).GetComponent< LineRenderer >();
-		
-		DrawCircleOnAxis( new Vector3( -1,1,0 ), Radius/(2.1f), 1,0 );
+//		Questionl1.SetActive( false );
+//		Questionl2.SetActive( false );
+//		Answerl1.SetActive( false );
+//		Answerl2.SetActive( false );
+//		Answerl3.SetActive( false );
+		DrawCircleOnAxis( new Vector3( -1,1,0 ), Radius/(2.1f), 1.2f,0 );
 		DrawCircleOnAxis( new Vector3( 1,1,0 ), Radius/(2.08f), 1.5f,2 );
 		DrawCircleOnAxis( new Vector3( 1,1,1 ), Radius/(2.04f), 2,3 );
 		DrawCircleOnAxis( new Vector3( -1,1,-1 ), Radius/(2.05f), 2.5f,4 );
 		DrawCircleOnAxis( new Vector3( 0,1,1 ), Radius/(2.04f), 3,1 );
 		DrawCircleOnAxis( new Vector3( -15,3,10 ), Radius/(2.06f), 2.5f,2 );
 		DrawCircleOnAxis( new Vector3( 1,-1,-1 ), Radius/(2.04f), 2,3 );
-		DrawCircleOnAxis( new Vector3( 0,-1,1 ), Radius/(2.00f), 1.5f,4 );
-		DrawCircleOnAxis( new Vector3( 3,5,-1 ), Radius/(2.02f), 1,1 );
+		DrawCircleOnAxis( new Vector3( 0,-1,1 ), Radius/(2.04f), 1.5f,4 );
+		DrawCircleOnAxis( new Vector3( 3,5,-1 ), Radius/(2.02f), 1.2f,1 );
 		//DrawCircleOnAxis( new Vector3( -1,-1,0 ), Radius/2, 2,0 );
 //		DrawCircleOnAxis( new Vector3( 4,4,5 ), Radius/1.98f, 2,1 );
 ////		DrawCircleOnAxis( new Vector3( -9,-3, 7 ), Radius/2, 2,0 );
@@ -125,10 +132,10 @@ public class Strips : MonoBehaviour {
 		LineRenderer Circle = g.GetComponent<LineRenderer>();
 		Circle.material = Lambert[ MaterialIndex ];
 		g.GetComponent<LineRenderer>().useWorldSpace = false;
-		Circle.SetVertexCount( 100 );
+		Circle.SetVertexCount( 110 );
 		Circle.SetWidth( (float)Popularity/10, (float)Popularity/10 );
 		float Angle = 0;
-		for ( int i = 0; i < 100; i++ )
+		for ( int i = 0; i < 110; i++ )
 		{
 			//Circle.SetPosition( i, new Vector3( Radius * Mathf.Cos( Angle * Mathf.Deg2Rad ), Radius * Mathf.Sin( Angle * Mathf.Deg2Rad ), 0 ) );
 			Circle.SetPosition( i, new Vector3( Radius * ( U.x * Mathf.Cos ( Angle * Mathf.Deg2Rad ) + V.x * Mathf.Sin ( Angle * Mathf.Deg2Rad ) ),
@@ -172,7 +179,7 @@ public class Strips : MonoBehaviour {
 		for ( int i = 0; i < Points + 1; i++ )
 		{
 			CircularLine1.SetPosition( i, new Vector3( CurrentRadius * Mathf.Cos( Angle * Mathf.Deg2Rad ), yCoord, CurrentRadius * Mathf.Sin( Angle * Mathf.Deg2Rad )));
-			Angle += 500/Points;
+			Angle += 800/Points;
 		}
 	}
 	
@@ -180,6 +187,17 @@ public class Strips : MonoBehaviour {
 	void Update () 
 	{
 		EnableRayCastHit();
+		if( Input.GetMouseButtonUp(0) && Camera.main.fieldOfView < 1 )
+		{
+			TweenAlpha.Begin( GameObject.Find("QuestionL1"), 0.5f, 0 );
+			TweenAlpha.Begin( GameObject.Find("AnswerL1"), 0.5f, 0 );
+			TweenAlpha.Begin( GameObject.Find("AnswerL2"), 0.5f, 0 );
+			Camera.main.animation[ "CameraFov" ].speed = -1;
+			Camera.main.animation[ "CameraFov" ].time = Camera.main.animation[ "CameraFov" ].length;
+			Bridge.ShowText = false;
+			Camera.main.animation.Play();
+		}
+//		Debug.Log("Fov: " + Camera.main.fieldOfView );
 	}
 	
 	void EnableRayCastHit()
@@ -193,12 +211,14 @@ public class Strips : MonoBehaviour {
 			{
 			    if( Hit.transform.name != "Sphere") 
 				{
-					Debug.Log( Hit.point + " " + Hit.transform.parent.name );
+					Debug.Log( Hit.point + " " + Hit.transform.parent.name + " " + Hit.transform.position );
 				    AxisH = CalculateAxis( Hit.transform.name , GetLineIndex( Hit.transform.parent.name ) );
 					lineIndex = GetLineIndex( Hit.transform.parent.name );
+					HitLine = Hit.transform.parent.name;
 					AngleH = CalculateAngleBetweenLineAndX( AxisH );
-					AngleCameraToMove = CalculateAngleCamera( AxisH );
+					//AngleCameraToMove = CalculateAngleCamera( AxisH );
 					Debug.Log( "Update Vala Angle " + Angle );
+					HitPosition = Hit.transform.name;
 					//RotateCircleToHorizontal( Angle );
 					RotateTowardsCamera( Hit.transform.position );
 					Rotate = true;
@@ -218,14 +238,20 @@ public class Strips : MonoBehaviour {
 			{
 				Rotate = false;
 				Angle = 0;
-				Camera.main.animation.Play();
+				if( Camera.main.fieldOfView > 1 )
+				{
+					Camera.main.animation[ "CameraFov" ].speed = 1;
+					Camera.main.animation.Play();
+				}
 				RotateCamera = true;
 			}
 		}
 		
 		if( RotateCamera )
 		{
-			AngleCameraToMove = Vector3.Angle ( new Vector3 ( 0,1,0), OnAxis ) * Mathf.Deg2Rad;
+			Debug.Log( "HIHIHIHIITTTTTTT " + GameObject.Find( HitPosition ).transform.position );
+			AngleCameraToMove =  Mathf.Rad2Deg * Mathf.Acos ( Vector3.Dot ( new Vector3 ( 1,0,0),  CalculatePerpendicularOncircle( HitPosition, lineIndex )  )/ (  new Vector3 ( 1,0,0).magnitude * CalculatePerpendicularOncircle( HitPosition, lineIndex ).magnitude ) );// Vector3.Angle ( new Vector3 ( 1,0,0), CalculatePerpendicularOncircle( HitPosition, lineIndex ) )  /* * Mathf.Deg2Rad*/;
+			Debug.Log( " Actual Angle: " + AngleCameraToMove /*Vector3.Angle ( new Vector3 ( 1,0,0), CalculatePerpendicularOncircle( HitPosition, lineIndex ))*/);
 			RotateCamera = false;
 			mRotate = true;
 //			AngleCamera += Time.deltaTime * 2;
@@ -240,15 +266,147 @@ public class Strips : MonoBehaviour {
 		}
 		if( mRotate )
 		{
-			AngleCamera += Time.deltaTime * 2;
-			GameObject.Find( "Sphere" ).transform.RotateAround( new Vector3( 0,0,1), -Time.deltaTime * 2 );
-			Debug.Log( "To Move " + AngleCameraToMove + " Moved " + AngleCamera );
+			Debug.Log( "AAAAAAAAAAAAA: " + AngleCameraToMove );
+			AngleCamera += Time.deltaTime * 2 * Mathf.Rad2Deg;
+			GameObject.Find( "Sphere" ).transform.RotateAround( Camera.main.transform.forward , -Time.deltaTime * 2 );
+		//	Debug.Log( "To Move " + AngleCameraToMove + " Moved " + AngleCamera );
 			if( AngleCamera >= AngleCameraToMove )
 			{
 				mRotate = false;
 				AngleCamera = 0;
+				Bridge.ShowText = true;
+				FadeInEffect.LogTime = true;
+				DisplayText();
+				//TextToDisplay.SetActive( true );
+				
 			}
 		}
+	}
+	
+	void DisplayText()
+	{
+//				Questionl1.GetComponent<UILabel>().text = "What Healthcare IT startups have crossed $5M in revenue?";
+//				Questionl2.GetComponent<UILabel>().text = "";
+//				Answerl1.GetComponent<UILabel>().text = "What Healthcare IT startups have crossed $5M in revenue?";
+//				Answerl2.GetComponent<UILabel>().text = "What Healthcare IT startups have crossed $5M in revenue?";
+//				Answerl3.GetComponent<UILabel>().text = "What Healthcare IT startups have crossed $5M in revenue?";
+		Debug.Log( "Hit on line " + HitLine );
+		if( HitLine == "Line0" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q1L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q1L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A1L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A1L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A1L3;
+		}		
+		else if( HitLine == "Line1" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q2L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q2L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A2L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A2L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A2L3;
+		}
+		else if( HitLine == "Line2" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q3L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q3L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A3L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A3L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A3L3;
+		}
+		else if( HitLine == "Line3" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q4L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q4L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A4L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A4L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A4L3;
+		}
+		else if( HitLine == "Line4" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q5L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q5L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A5L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A5L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A5L3;
+		}
+		else if( HitLine == "Line5" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q6L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q6L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A6L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A6L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A6L3;
+		}
+		else if( HitLine == "Line6" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q7L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q7L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A7L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A7L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A7L3;
+		}
+		else if( HitLine == "Line7" )
+		{
+			Debug.Log( "8888888" );
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q8L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q8L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A8L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A8L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A8L3;
+		}
+		else if( HitLine == "Line8" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q9L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q9L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A9L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A9L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A9L3;
+		}
+		else if( HitLine == "Line9" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q10L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q10L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A10L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A10L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A10L3;
+		}
+		else if( HitLine == "Line10" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q11L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q11L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A11L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A11L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A11L3;
+		}
+		else if( HitLine == "Line11" )
+		{
+			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q1L1;
+			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q1L2;
+			Answerl1.GetComponent<UILabel>().text = QuestionAns._A1L1;
+			Answerl2.GetComponent<UILabel>().text = QuestionAns._A1L2;
+			Answerl3.GetComponent<UILabel>().text = QuestionAns._A1L3;
+		}
+		
+		
+		
+	}
+	
+	Vector3 CalculatePerpendicularOncircle( string HitPosition, int Index )
+	{
+		Vector3 HitPoint = GameObject.Find( "Line" + Index + "/" + HitPosition ).transform.position;
+		Debug.Log( HitPosition );
+		int ColliderIndex;
+	   	if( HitPosition.Length == 10 ) ColliderIndex = int.Parse( HitPosition.Substring( 8, 2 ).Trim() );
+		else ColliderIndex = int.Parse( HitPosition.Substring( 8, 1 ).Trim() );
+		Debug.Log( "ColliderNo " + ColliderIndex );
+		Vector3 Perp;
+		if( ColliderIndex < 75) Perp = GameObject.Find( "Line" + Index + "/Collider" + ( ColliderIndex+25 ).ToString() ).transform.position;
+		else Perp = GameObject.Find( "Line" + Index + "/Collider" + ( 25 - ( 100 - ColliderIndex ) ).ToString() ).transform.position;
+		Vector3 U = HitPoint - Vector3.zero;
+		Vector3 V = Perp - Vector3.zero;
+		return V;
 	}
 	
 	float CalculateAngleBetweenLineAndX( Vector3 Axis )
@@ -295,6 +453,8 @@ public class Strips : MonoBehaviour {
 		
 		//GameObject.Find( "Sphere" ).transform.RotateAround( OnAxis, 360 - AngleToMove );
 	}
+	
+	
 	
 	float CalculateAngleCamera( Vector3 Axis )
 	{
