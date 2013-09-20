@@ -1,11 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Trivial script that fills the label's contents gradually, as if someone was typing.
-/// </summary>
-
-[RequireComponent(typeof(UILabel))]
-[AddComponentMenu("NGUI/Examples/Typewriter Effect")]
 public class TypewriterEffect : MonoBehaviour
 {
 	public int charsPerSecond = 40;

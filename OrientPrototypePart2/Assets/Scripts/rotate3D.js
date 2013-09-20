@@ -10,7 +10,7 @@ function Start () {
 function Update () {
 	
 	
-	if(	Input.GetMouseButton(0)  && Camera.main.fieldOfView > 1/*&& Input.touchCount==1*/ ){
+	if(	Input.GetMouseButton(0)  && Camera.main.fieldOfView > 1/*&& Input.touchCount==1*/ && !Camera.main.animation.isPlaying ){
 		
 		//print (transform.eulerAngles);
 		

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Strips : MonoBehaviour {
 	
@@ -50,15 +51,44 @@ public class Strips : MonoBehaviour {
 //		Answerl1.SetActive( false );
 //		Answerl2.SetActive( false );
 //		Answerl3.SetActive( false );
-		DrawCircleOnAxis( new Vector3( -1,1,0 ), Radius/(2.1f), 1.2f,0 );
-		DrawCircleOnAxis( new Vector3( 1,1,0 ), Radius/(2.08f), 1.5f,2 );
-		DrawCircleOnAxis( new Vector3( 1,1,1 ), Radius/(2.04f), 2,3 );
-		DrawCircleOnAxis( new Vector3( -1,1,-1 ), Radius/(2.05f), 2.5f,4 );
-		DrawCircleOnAxis( new Vector3( 0,1,1 ), Radius/(2.04f), 3,1 );
-		DrawCircleOnAxis( new Vector3( -15,3,10 ), Radius/(2.06f), 2.5f,2 );
-		DrawCircleOnAxis( new Vector3( 1,-1,-1 ), Radius/(2.04f), 2,3 );
-		DrawCircleOnAxis( new Vector3( 0,-1,1 ), Radius/(2.04f), 1.5f,4 );
-		DrawCircleOnAxis( new Vector3( 3,5,-1 ), Radius/(2.02f), 1.2f,1 );
+		Vector3[] Points = UniformPointsOnSphere( 15, 2 );
+		for ( int i = 0; i < Points.Length; i++ )
+		{
+			DrawCircleOnAxis( Points[i], (Radius/2.1f) +0.007f*i, 1f+.1f*i,i %9 );
+		}
+//		DrawCircleOnAxis( Points[0], Radius/(2.1f), 1.2f,0 );
+//		DrawCircleOnAxis( Points[1], Radius/(2.08f), 1.5f,2 );
+//		DrawCircleOnAxis( Points[2], Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( Points[3], Radius/(2.05f), 2.5f,4 );
+//		DrawCircleOnAxis( Points[4], Radius/(2.04f), 3,1 );
+//		DrawCircleOnAxis( Points[5], Radius/(2.06f), 2.5f,2 );
+//		DrawCircleOnAxis( Points[6], Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( Points[7], Radius/(2.04f), 1.5f,4 );
+////		DrawCircleOnAxis( Points[8], Radius/(2.02f), 1.2f,1 );
+//		DrawCircleOnAxis( Points[9], Radius/(2.02f), 1.2f,1 );
+//		DrawCircleOnAxis( Points[10], Radius/(2.02f), 1.2f,1 );
+//		DrawCircleOnAxis( Points[11], Radius/(2.02f), 1.2f,1 );
+//		DrawCircleOnAxis( new Vector3( 0,1,0 ), Radius/(2.1f), 1.2f,0 );
+//		DrawCircleOnAxis( new Vector3( 1,0,0 ), Radius/(2.08f), 1.5f,2 );
+//		DrawCircleOnAxis( new Vector3( 0,0,1), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( -1,-1,1 ), Radius/(2.1f), 1.2f,0 );
+//		DrawCircleOnAxis( new Vector3( -1,1,-1 ), Radius/(2.08f), 1.5f,2 );
+//		DrawCircleOnAxis( new Vector3( 1,-1,-1), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 1,1,1), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 1,-1,1), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( -1,1,1), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 1,1,-1), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 1,1,0), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 0,1,1), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 1,0,1), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 1,5,2), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 1,1,1 ), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( -1,1,-1 ), Radius/(2.05f), 2.5f,4 );
+//		DrawCircleOnAxis( new Vector3( 0,1,1 ), Radius/(2.04f), 3,1 );
+//		DrawCircleOnAxis( new Vector3( -15,3,10 ), Radius/(2.06f), 2.5f,2 );
+//		DrawCircleOnAxis( new Vector3( 1,-1,-1 ), Radius/(2.04f), 2,3 );
+//		DrawCircleOnAxis( new Vector3( 0,-1,1 ), Radius/(2.04f), 1.5f,4 );
+//		DrawCircleOnAxis( new Vector3( 3,5,-1 ), Radius/(2.02f), 1.2f,1 );
 		//DrawCircleOnAxis( new Vector3( -1,-1,0 ), Radius/2, 2,0 );
 //		DrawCircleOnAxis( new Vector3( 4,4,5 ), Radius/1.98f, 2,1 );
 ////		DrawCircleOnAxis( new Vector3( -9,-3, 7 ), Radius/2, 2,0 );
@@ -114,16 +144,21 @@ public class Strips : MonoBehaviour {
 	void DrawCircleOnAxis( Vector3 N, float Radius, float Popularity, int MaterialIndex )
 	{
 
-		N = N / N.magnitude;
+		N = new Vector3( N.x / N.magnitude, N.y / N.magnitude, N.z / N.magnitude ) ;
+		Debug.Log(N);
 		Vector3 U = new Vector3();
-		if     ( N.x != 0 && N.y != 0 && N.z != 0 )  U = ( new Vector3( - N.x,   N.y,   N.z ) / ( new Vector3( - N.x,   N.y,   N.z ) ).magnitude ) * Radius;
+		if     ( N.x != 0 && N.y != 0 && N.z != 0 )  
+		{
+			U = CalculatePerpendicularVector( N )/*U = ( new Vector3( - N.y,   N.x, - N.z ) / ( new Vector3( - N.y,   N.x, - N.z ) ).magnitude ) * Radius*/;
+			U = ( U / U.magnitude ) * Radius;
+		}
 		else if( N.x != 0 && N.y != 0 && N.z == 0 )  U = ( new Vector3( - N.x,   N.y,   N.z ) / ( new Vector3( - N.x,   N.y,   N.z ) ).magnitude ) * Radius;
 		else if( N.x != 0 && N.y == 0 && N.z != 0 )  U = ( new Vector3( - N.x,   N.y,   N.z ) / ( new Vector3( - N.x,   N.y,   N.z ) ).magnitude ) * Radius;
 		else if( N.x == 0 && N.y != 0 && N.z != 0 )  U = ( new Vector3(   N.x, - N.y,   N.z ) / ( new Vector3(   N.x, - N.y,   N.z ) ).magnitude ) * Radius;
-		else if( N.x != 0 && N.y == 0 && N.z == 0 )  U = ( new Vector3(   N.x,   N.x,   N.z ) / ( new Vector3(   N.x,   N.x,   N.z ) ).magnitude ) * Radius;
-		else if( N.x == 0 && N.y != 0 && N.z == 0 )  U = ( new Vector3(   N.y,   N.y,   N.z ) / ( new Vector3(   N.y,   N.y,   N.z ) ).magnitude ) * Radius;
-		else if( N.x == 0 && N.y == 0 && N.z != 0 )  U = ( new Vector3(   N.z,   N.y,   N.z ) / ( new Vector3(   N.z,   N.y,   N.z ) ).magnitude ) * Radius;
-
+		else if( N.x != 0 && N.y == 0 && N.z == 0 )  U = ( new Vector3(   N.y,   N.x,   N.z ) / ( new Vector3(   N.y,   N.x,   N.z ) ).magnitude ) * Radius;
+		else if( N.x == 0 && N.y != 0 && N.z == 0 )  U = ( new Vector3(   N.y,   N.x,   N.z ) / ( new Vector3(   N.y,   N.x,   N.z ) ).magnitude ) * Radius;
+		else if( N.x == 0 && N.y == 0 && N.z != 0 )  U = ( new Vector3(   N.z,   N.y,   N.x ) / ( new Vector3(   N.z,   N.y,   N.x ) ).magnitude ) * Radius;
+		Debug.Log("U " +U+ " " + (Vector3.Dot( U, N)) + " Dot " + Vector3.Angle( N , U ) );
 		Vector3 V = ( Vector3.Cross( N, U ) / Vector3.Cross( N, U ).magnitude ) * Radius;
 		var g = Instantiate( CircleObject, Vector3.zero, Quaternion.identity ) as GameObject;
 		g.transform.parent = transform;
@@ -146,7 +181,7 @@ public class Strips : MonoBehaviour {
 												Radius * ( U.z * Mathf.Cos ( Angle * Mathf.Deg2Rad ) + V.z * Mathf.Sin ( Angle * Mathf.Deg2Rad ) ) ), Quaternion.identity ) as GameObject;
 			Collide.transform.parent = GameObject.Find( "Line" + LineNo.ToString() ).transform;
 			Collide.transform.name = "Collider" + i;
-			Debug.Log( (Radius * Mathf.Cos( Angle )).ToString() );
+			//Debug.Log( (Radius * Mathf.Cos( Angle )).ToString() );
 			Angle += 3.6f;
 		}
 		
@@ -196,7 +231,19 @@ public class Strips : MonoBehaviour {
 			Camera.main.animation[ "CameraFov" ].time = Camera.main.animation[ "CameraFov" ].length;
 			Bridge.ShowText = false;
 			Camera.main.animation.Play();
+			EnableColliders();
 		}
+		
+		else if( Input.GetMouseButtonDown(0) && Rotate )
+		{
+			Rotate = false;
+			RotateCamera = false;
+			mRotate = false;
+			Angle = 0;
+			AngleCamera = 0;
+			EnableColliders();
+		}
+		
 //		Debug.Log("Fov: " + Camera.main.fieldOfView );
 	}
 	
@@ -211,7 +258,7 @@ public class Strips : MonoBehaviour {
 			{
 			    if( Hit.transform.name != "Sphere") 
 				{
-					Debug.Log( Hit.point + " " + Hit.transform.parent.name + " " + Hit.transform.position );
+//					Debug.Log( Hit.point + " " + Hit.transform.parent.name + " " + Hit.transform.position );
 				    AxisH = CalculateAxis( Hit.transform.name , GetLineIndex( Hit.transform.parent.name ) );
 					lineIndex = GetLineIndex( Hit.transform.parent.name );
 					HitLine = Hit.transform.parent.name;
@@ -222,7 +269,7 @@ public class Strips : MonoBehaviour {
 					//RotateCircleToHorizontal( Angle );
 					RotateTowardsCamera( Hit.transform.position );
 					Rotate = true;
-					
+					DisableColliders();
 				}
 			}
 		}
@@ -285,110 +332,123 @@ public class Strips : MonoBehaviour {
 	
 	void DisplayText()
 	{
-//				Questionl1.GetComponent<UILabel>().text = "What Healthcare IT startups have crossed $5M in revenue?";
-//				Questionl2.GetComponent<UILabel>().text = "";
-//				Answerl1.GetComponent<UILabel>().text = "What Healthcare IT startups have crossed $5M in revenue?";
-//				Answerl2.GetComponent<UILabel>().text = "What Healthcare IT startups have crossed $5M in revenue?";
-//				Answerl3.GetComponent<UILabel>().text = "What Healthcare IT startups have crossed $5M in revenue?";
 		Debug.Log( "Hit on line " + HitLine );
-		if( HitLine == "Line0" )
+		if( HitLine.Length == 5 )
 		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q1L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q1L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A1L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A1L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A1L3;
-		}		
-		else if( HitLine == "Line1" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q2L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q2L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A2L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A2L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A2L3;
+			Questionl1.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 1 ) ) ,0];
+			Questionl2.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 1 ) ) ,1];
+			Answerl1.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 1 ) ) ,2];
+			Answerl2.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 1 ) ) ,3];
+			Answerl3.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 1 ) ) ,4];
 		}
-		else if( HitLine == "Line2" )
+		else
 		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q3L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q3L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A3L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A3L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A3L3;
-		}
-		else if( HitLine == "Line3" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q4L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q4L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A4L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A4L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A4L3;
-		}
-		else if( HitLine == "Line4" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q5L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q5L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A5L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A5L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A5L3;
-		}
-		else if( HitLine == "Line5" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q6L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q6L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A6L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A6L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A6L3;
-		}
-		else if( HitLine == "Line6" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q7L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q7L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A7L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A7L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A7L3;
-		}
-		else if( HitLine == "Line7" )
-		{
-			Debug.Log( "8888888" );
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q8L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q8L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A8L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A8L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A8L3;
-		}
-		else if( HitLine == "Line8" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q9L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q9L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A9L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A9L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A9L3;
-		}
-		else if( HitLine == "Line9" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q10L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q10L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A10L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A10L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A10L3;
-		}
-		else if( HitLine == "Line10" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q11L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q11L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A11L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A11L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A11L3;
-		}
-		else if( HitLine == "Line11" )
-		{
-			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q1L1;
-			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q1L2;
-			Answerl1.GetComponent<UILabel>().text = QuestionAns._A1L1;
-			Answerl2.GetComponent<UILabel>().text = QuestionAns._A1L2;
-			Answerl3.GetComponent<UILabel>().text = QuestionAns._A1L3;
+			Questionl1.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 2 ) ) ,0];
+			Questionl2.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 2 ) ) ,1];
+			Answerl1.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 2 ) ) ,2];
+			Answerl2.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 2 ) ) ,3];
+			Answerl3.GetComponent<UILabel>().text = QuestionAns.QA[ int.Parse( HitLine.Substring( 4, 2 ) ) ,4];
 		}
 		
+		Debug.Log( "Hit on line " + HitLine );
+//		if( HitLine == "Line0" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q1L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q1L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A1L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A1L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A1L3;
+//		}		
+//		else if( HitLine == "Line1" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q2L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q2L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A2L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A2L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A2L3;
+//		}
+//		else if( HitLine == "Line2" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q3L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q3L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A3L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A3L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A3L3;
+//		}
+//		else if( HitLine == "Line3" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q4L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q4L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A4L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A4L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A4L3;
+//		}
+//		else if( HitLine == "Line4" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q5L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q5L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A5L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A5L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A5L3;
+//		}
+//		else if( HitLine == "Line5" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q6L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q6L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A6L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A6L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A6L3;
+//		}
+//		else if( HitLine == "Line6" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q7L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q7L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A7L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A7L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A7L3;
+//		}
+//		else if( HitLine == "Line7" )
+//		{
+//			Debug.Log( "8888888" );
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q8L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q8L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A8L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A8L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A8L3;
+//		}
+//		else if( HitLine == "Line8" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q9L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q9L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A9L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A9L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A9L3;
+//		}
+//		else if( HitLine == "Line9" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q10L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q10L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A10L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A10L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A10L3;
+//		}
+//		else if( HitLine == "Line10" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q11L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q11L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A11L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A11L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A11L3;
+//		}
+//		else if( HitLine == "Line11" )
+//		{
+//			Questionl1.GetComponent<UILabel>().text = QuestionAns._Q1L1;
+//			Questionl2.GetComponent<UILabel>().text = QuestionAns._Q1L2;
+//			Answerl1.GetComponent<UILabel>().text = QuestionAns._A1L1;
+//			Answerl2.GetComponent<UILabel>().text = QuestionAns._A1L2;
+//			Answerl3.GetComponent<UILabel>().text = QuestionAns._A1L3;
+//		}
+//		
 		
 		
 	}
@@ -461,5 +521,48 @@ public class Strips : MonoBehaviour {
 		return ( Vector3.Angle( Camera.main.transform.up, Axis )) * Mathf.Deg2Rad;		
 	}
 	
+	void EnableColliders()
+	{
+		BoxCollider[] Colliders = GameObject.FindObjectsOfType( typeof ( BoxCollider )  ) as BoxCollider[];
+		for ( int i = 0; i < Colliders.Length; i++ )
+		{
+			Colliders[i].enabled = true;
+		}
+	}
+	
+	void DisableColliders()
+	{
+		BoxCollider[] Colliders = GameObject.FindObjectsOfType( typeof ( BoxCollider )  ) as BoxCollider[];
+		for ( int i = 0; i < Colliders.Length; i++ )
+		{
+			Colliders[i].enabled = false;
+		}
+	}
+	
+	Vector3[] UniformPointsOnSphere(float N, float scale) 
+	{
+        var points = new List<Vector3>();
+        var i = Mathf.PI * (3 - Mathf.Sqrt(5));
+        var o = 2 / N;
+        for(var k=0; k<N; k++)
+		{
+            var y = k * o - 1 + (o / 2);
+            var r = Mathf.Sqrt( 1 - y*y);
+            var phi = k * i;
+			Debug.Log( "AnglePhi: " + phi%360 + " " + phi );		
+            points.Add(new Vector3(Mathf.Cos(phi)*r, y, Mathf.Sin(phi)*r) * scale);
+        }
+
+        return points.ToArray();
+    }
+	
+	Vector3 CalculatePerpendicularVector( Vector3 N )
+	{
+		Vector3 U = new Vector3();
+		U.x = 1;
+		U.y = 0;
+		U.z = - N.x / N.z;
+		return U;
+	}
 	
 }

@@ -57,6 +57,7 @@ function Update () {
 
 	if (Input.GetAxis("Mouse ScrollWheel")< 0)
 	{
+		EnableColliders();
 		//Bridge.ZoomOut = true;
 		//TextToDisplay.SetActive( false );
 		Debug.Log( "ZZZZZZZZZZZ" );
@@ -69,4 +70,13 @@ function Update () {
 	if(fov1>60) fov1 =60;
 
 //	camera1.fieldOfView = Input.GetAxis("Mouse ScrollWheel");    
+}
+
+function EnableColliders()
+{
+	var Colliders : BoxCollider[] = GameObject.FindObjectsOfType( typeof ( BoxCollider )  ) as BoxCollider[];
+	for ( var i : int = 0; i < Colliders.Length; i++ )
+	{
+			Colliders[i].enabled = true;
+	}
 }

@@ -2,6 +2,26 @@
 using System.Collections;
 
 public class QuestionAns : MonoBehaviour {
+	
+	public static string[ , ] QA = new string[15 , 5]
+											{ 
+												{"Happiness", "", "How can you maximize your happiness in life?", "",""},
+												{"Movies", "", "What are some of your favorite deep, awe-inspiring,", "and/or thought-provoking movies?",""},
+												{"Ethnicity", "", "What's it like to be predominantly attracted to a particular", "race or ethnic group that's not your own?",""},
+												{"Art", "", "What can be said about art?", "",""},
+												{"Culture", "", "What strikes you as unusual about your own culture?", "",""},
+												{"Friendship", "", "What is an ideal friendship?", "",""},
+												{"Travel", "", "What are the most surreal places one can ever visit?", "",""},
+												{"Technology", "", "What will be the next big trend on the Internet after", "\"search\" of Google and \"social\" of Facebook?",""},
+												{"Sports", "", "What is the greatest comeback in sports history?", "",""},
+												{"Entertainment", "", "What are the most entertaining websites on the web today?", "",""},
+												{"Music", "", "What is one piece of music that can get me into classical music?", "",""},
+												{"Happiness", "", "How can you maximize your happiness in life?", "",""},
+												{"Movies", "", "What are some of your favorite deep, awe-inspiring,", "and/or thought-provoking movies?",""},
+												{"Friendship", "", "What is an ideal friendship?", "",""},
+												{"Travel", "", "What are the most surreal places one can ever visit?", "",""},
+												
+											};
 
 	public static string _Q1L1 = " Happiness ";
 	public static string _Q1L2 = " ";
